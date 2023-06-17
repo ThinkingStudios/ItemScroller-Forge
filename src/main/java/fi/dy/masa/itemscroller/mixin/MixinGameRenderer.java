@@ -16,7 +16,7 @@ public abstract class MixinGameRenderer
     @Shadow @Final private net.minecraft.client.MinecraftClient client;
 
     @Inject(method = "render(FJZ)V",
-            at = @At(value = "INVOKE", shift = Shift.AFTER,
+            at = @At(value = "INVOKE", shift = Shift.AFTER, remap = false,
                      target = "Lnet/minecraftforge/client/ForgeHooksClient;drawScreen(Lnet/minecraft/client/gui/screen/Screen;Lnet/minecraft/client/util/math/MatrixStack;IIF)V"))
     private void onDrawScreenPost(float partialTicks, long nanoTime, boolean renderWorldIn, CallbackInfo ci)
     {
