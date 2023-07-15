@@ -5,8 +5,8 @@ license = "LGPLv3"
 [[mods]]
 modId = "itemscroller"
 version = "${version}"
-displayName = "ItemScroller"
-displayURL="https://changeme.dev/" #optional
+displayName = "ItemScroller-Forge"
+displayURL="https://github.com/ThinkingStudios/ItemScroller-Forge" #optional
 logoFile="icon.png" #optional
 credits="masa" #optional
 authors="TexTrue, ThinkingStudio" #optional
@@ -25,5 +25,12 @@ side = "BOTH"
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.19,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.itemscroller]]
+modId = "malilib"
+mandatory = true
+versionRange = "[0.1.5,)"
 ordering = "NONE"
 side = "BOTH"
