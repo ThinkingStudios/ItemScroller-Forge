@@ -6,8 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
 
 public class TradeType
@@ -66,7 +66,7 @@ public class TradeType
         try
         {
             Identifier id = new Identifier(name);
-            return Registry.ITEM.get(id);
+            return Registries.ITEM.get(id);
         }
         catch (Exception e)
         {
@@ -78,7 +78,7 @@ public class TradeType
     {
         try
         {
-            return Registry.ITEM.getId(item).toString();
+            return Registries.ITEM.getId(item).toString();
         }
         catch (Exception e)
         {

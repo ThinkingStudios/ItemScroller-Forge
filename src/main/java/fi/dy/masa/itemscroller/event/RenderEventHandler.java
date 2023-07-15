@@ -296,7 +296,7 @@ public class RenderEventHandler
 
         RenderUtils.drawRect(x, y, w, w, 0x20FFFFFF); // light background for the item
 
-        if (!InventoryUtils.isStackEmpty(stack))
+        if (InventoryUtils.isStackEmpty(stack) == false)
         {
             DiffuseLighting.enableGuiDepthLighting();
 
@@ -305,7 +305,7 @@ public class RenderEventHandler
 
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.translate(0, 0, 100.f);
-            this.mc.getItemRenderer().renderInGui(stack, x, y);
+            this.mc.getItemRenderer().renderInGui(matrixStack, stack, x, y);
         }
     }
 

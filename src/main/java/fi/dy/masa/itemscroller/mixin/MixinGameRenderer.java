@@ -1,6 +1,5 @@
 package fi.dy.masa.itemscroller.mixin;
 
-import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.itemscroller.event.RenderEventHandler;
 
-@Mixin(GameRenderer.class)
+@Mixin(net.minecraft.client.render.GameRenderer.class)
 public abstract class MixinGameRenderer
 {
     @Shadow @Final private net.minecraft.client.MinecraftClient client;
