@@ -1,0 +1,36 @@
+modLoader = "javafml"
+loaderVersion = "[43,)"
+license = "LGPLv3"
+
+[[mods]]
+modId = "itemscroller"
+version = "${version}"
+displayName = "ItemScroller-Forge"
+displayURL="https://github.com/ThinkingStudios/ItemScroller-Forge" #optional
+logoFile="icon.png" #optional
+credits="masa" #optional
+authors="TexTrue, ThinkingStudio" #optional
+description = '''
+Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots
+'''
+
+[[dependencies.itemscroller]]
+modId = "forge"
+mandatory = true
+versionRange = "[43,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.itemscroller]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.3,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.itemscroller]]
+modId = "malilib"
+mandatory = true
+versionRange = "[0.1.5,)"
+ordering = "NONE"
+side = "BOTH"
