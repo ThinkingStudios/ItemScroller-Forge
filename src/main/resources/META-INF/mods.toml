@@ -24,13 +24,13 @@ side = "BOTH"
 [[dependencies.itemscroller]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19.3,)"
+versionRange = "[1.20,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.itemscroller]]
 modId = "malilib"
 mandatory = true
-versionRange = "[0.1.5,)"
+versionRange = "[0.1.0,)"
 ordering = "NONE"
 side = "BOTH"
