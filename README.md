@@ -1,4 +1,4 @@
-Item Scroller
+ItemScroller-Forge
 ==============
 Item Scroller is a Minecraft mod that adds various convenience features for moving items
 inside inventory GUIs. Examples are scrolling the mouse wheel over slots with items in them
