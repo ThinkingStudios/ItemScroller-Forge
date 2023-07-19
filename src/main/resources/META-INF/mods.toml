@@ -1,8 +1,6 @@
-# This is an example mods.toml file.
-# Any fields that aren't annotated with #optional are *required*!
 modLoader = "javafml"
 loaderVersion = "[40,)"
-license = "All rights reserved"
+license = "LGPLv3"
 
 [[mods]]
 modId = "itemscroller"
