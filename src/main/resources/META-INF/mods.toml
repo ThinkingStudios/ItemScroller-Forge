@@ -5,7 +5,7 @@ license = "LGPLv3"
 [[mods]]
 modId = "itemscroller"
 version = "${version}"
-displayName = "ItemScroller-Forge"
+displayName = "Rock'n Roller"
 displayURL="https://github.com/ThinkingStudios/ItemScroller-Forge" #optional
 logoFile="icon.png" #optional
 credits="masa" #optional
