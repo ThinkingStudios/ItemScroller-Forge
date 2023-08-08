@@ -11,6 +11,8 @@ logoFile="icon.png" #optional
 credits="masa" #optional
 authors="TexTrue, ThinkingStudio" #optional
 description = '''
+Item Scroller unofficial forge port.
+
 Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots
 '''
 
