@@ -3,7 +3,7 @@ loaderVersion = "[43,)"
 license = "LGPLv3"
 
 [[mods]]
-modId = "itemscroller"
+modId = "rocknroller"
 version = "${version}"
 displayName = "Rock'n Roller"
 displayURL="https://github.com/ThinkingStudios/ItemScroller-Forge" #optional
@@ -11,26 +11,28 @@ logoFile="icon.png" #optional
 credits="masa" #optional
 authors="TexTrue, ThinkingStudio" #optional
 description = '''
+ItemScroller unofficial forge port.
+
 Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots
 '''
 
-[[dependencies.itemscroller]]
+[[dependencies.rocknroller]]
 modId = "forge"
 mandatory = true
 versionRange = "[43,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.itemscroller]]
+[[dependencies.rocknroller]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.20,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.itemscroller]]
-modId = "malilib"
+[[dependencies.rocknroller]]
+modId = "mafglib"
 mandatory = true
-versionRange = "[0.1.0,)"
+versionRange = "*"
 ordering = "NONE"
 side = "BOTH"
