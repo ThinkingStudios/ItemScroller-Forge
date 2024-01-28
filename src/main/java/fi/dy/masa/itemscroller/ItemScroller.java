@@ -1,7 +1,6 @@
 package fi.dy.masa.itemscroller;
 
 import fi.dy.masa.itemscroller.gui.GuiConfigs;
-import fi.dy.masa.malilib.compat.forge.ForgePlatformCompat;
 import fi.dy.masa.malilib.compat.forge.ForgePlatformUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
