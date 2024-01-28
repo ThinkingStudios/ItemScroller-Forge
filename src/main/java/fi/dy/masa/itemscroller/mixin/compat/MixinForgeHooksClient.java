@@ -1,4 +1,4 @@
-package fi.dy.masa.itemscroller.mixin;
+package fi.dy.masa.itemscroller.mixin.compat;
 
 import fi.dy.masa.itemscroller.event.RenderEventHandler;
 import net.minecraft.client.MinecraftClient;

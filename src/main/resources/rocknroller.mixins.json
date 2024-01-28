@@ -14,7 +14,7 @@
     "MixinMerchantScreen",
     "MixinMerchantScreenHandler",
     "MixinScreen",
-    "MixinForgeHooksClient"
+    "compat.MixinForgeHooksClient"
   ],
   "injectors": {
     "defaultRequire": 1
