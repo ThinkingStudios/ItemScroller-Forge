@@ -14,7 +14,7 @@ group = project.maven_group
 loom {
     forge {
         mixinConfigs = [
-                "itemscroller.mixins.json"
+                "rocknroller.mixins.json"
         ]
     }
 }
