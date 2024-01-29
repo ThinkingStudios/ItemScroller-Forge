@@ -6,6 +6,17 @@
 
 Item Scroller unofficial forge port.
 
+**Require [MaFgLib](https://github.com/ThinkingStudios/MaLiLib-Forge).**
+
+<img alt="forge" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/forge_vector.svg">
+
+<a href="https://modrinth.com/mod/rocknroller">
+<img alt="modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">
+</a>
+<a href="https://www.curseforge.com/minecraft/mc-mods/rockn-roller">
+<img alt="curseforge" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/curseforge_vector.svg">
+</a>
+
 </div></center>
 
 Rock'n Roller is a Minecraft mod that adds various 
