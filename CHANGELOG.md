@@ -1,2 +1,2 @@
 ## Change
-- update mafglib version to `0.1.9`
+- update mafglib version to `0.1.7`
