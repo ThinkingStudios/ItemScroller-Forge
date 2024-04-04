@@ -26,6 +26,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.MerchantScreenHandler;
@@ -110,20 +111,22 @@ public class InventoryUtils
         {
             ItemStack stack = ItemStack.EMPTY;
             CraftingRecipe recipe = Configs.Generic.USE_RECIPE_CACHING.getBooleanValue() ? lastRecipe : null;
+            RecipeEntry<?> recipeEntry = null;
 
             if (recipe == null || recipe.matches(craftMatrix, world) == false)
             {
-                Optional<CraftingRecipe> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, world);
-                recipe = optional.isPresent() ? optional.get() : null;
+                Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, world);
+                recipe = optional.map(RecipeEntry::value).orElse(null);
+                recipeEntry = optional.orElse(null);
             }
 
             if (recipe != null)
             {
                 if ((recipe.isIgnoredInRecipeBook() ||
                      world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) == false ||
-                     ((ClientPlayerEntity) player).getRecipeBook().contains(recipe)))
+                     ((ClientPlayerEntity) player).getRecipeBook().contains(recipeEntry)))
                 {
-                    inventoryCraftResult.setLastRecipe(recipe);
+                    inventoryCraftResult.setLastRecipe(recipeEntry);
                     stack = recipe.craft(craftMatrix, MinecraftClient.getInstance().getNetworkHandler().getRegistryManager());
                 }
 

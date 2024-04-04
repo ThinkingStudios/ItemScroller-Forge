@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[43,)"
+loaderVersion = "[1,)"
 license = "LGPLv3"
 
 [[mods]]
@@ -16,23 +16,26 @@ ItemScroller unofficial forge port.
 Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots
 '''
 
+[[mixins]]
+config = "rocknroller.mixins.json"
+
 [[dependencies.rocknroller]]
-modId = "forge"
-mandatory = true
-versionRange = "[43,)"
+modId = "neoforge"
+type = "required"
+versionRange = "[20.3,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.rocknroller]]
 modId = "minecraft"
-mandatory = true
-versionRange = "[1.20,)"
+type = "required"
+versionRange = "[1.20.3,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.rocknroller]]
 modId = "mafglib"
-mandatory = true
+type = "required"
 versionRange = "*"
 ordering = "NONE"
 side = "BOTH"
