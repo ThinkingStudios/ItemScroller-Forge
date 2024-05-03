@@ -14,18 +14,13 @@ public class ItemScroller {
 
     public ItemScroller() {
         if (FMLLoader.getDist().isClient()) {
-            this.onInitializeClient();
+            ForgePlatformUtils.getInstance().getClientModIgnoredServerOnly();
+            InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
+            ForgePlatformUtils.getInstance().getMod(Reference.MOD_ID).registerModConfigScreen((screen) -> {
+                GuiConfigs gui = new GuiConfigs();
+                gui.setParent(screen);
+                return gui;
+            });
         }
-    }
-
-    public void onInitializeClient() {
-        ForgePlatformUtils.getInstance().getClientModIgnoredServerOnly();
-        InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
-
-        ForgePlatformUtils.getInstance().getMod(Reference.MOD_ID).registerModConfigScreen((screen) -> {
-            GuiConfigs gui = new GuiConfigs();
-            gui.setParent(screen);
-            return gui;
-        });
     }
 }
