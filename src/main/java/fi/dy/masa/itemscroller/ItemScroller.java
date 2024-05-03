@@ -16,7 +16,6 @@ public class ItemScroller {
         if (FMLLoader.getDist().isClient()) {
             ForgePlatformUtils.getInstance().getClientModIgnoredServerOnly();
             InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
-
             ForgePlatformUtils.getInstance().getMod(Reference.MOD_ID).registerModConfigScreen((screen) -> {
                 GuiConfigs gui = new GuiConfigs();
                 gui.setParent(screen);
