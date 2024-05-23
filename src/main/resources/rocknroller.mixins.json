@@ -13,8 +13,7 @@
     "MixinCraftingScreenHandler",
     "MixinMerchantScreen",
     "MixinMerchantScreenHandler",
-    "MixinScreen",
-    "compat.MixinForgeHooksClient"
+    "MixinScreen"
   ],
   "injectors": {
     "defaultRequire": 1
