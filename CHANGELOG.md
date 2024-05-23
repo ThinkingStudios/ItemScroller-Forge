@@ -1,2 +1,2 @@
 ## Change
-- update Forge & MaFgLib version
+- update MaFgLib version
