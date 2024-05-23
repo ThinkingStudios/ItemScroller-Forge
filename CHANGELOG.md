@@ -1,2 +1,2 @@
 ## Change
-- update NeoForge & MaFgLib version
+- update MaFgLib version
