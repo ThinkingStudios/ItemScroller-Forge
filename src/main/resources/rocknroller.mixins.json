@@ -10,7 +10,6 @@
     "MixinAbstractInventoryScreen",
     "MixinClientPlayerInteractionManager",
     "MixinCraftingScreenHandler",
-    "MixinForgeHooksClient",
     "MixinMerchantScreen",
     "MixinMerchantScreenHandler",
     "MixinScreen"
