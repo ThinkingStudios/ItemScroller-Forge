@@ -61,7 +61,7 @@ public class ClickPacketBuffer
     
                 for (int i = 0; i < maxCount; ++i)
                 {
-                    mc.player.networkHandler.sendPacket(BUFFER.poll());
+                    mc.player.networkHandler.send(BUFFER.poll());
                 }
 
                 hasBufferedPackets = BUFFER.isEmpty() == false;

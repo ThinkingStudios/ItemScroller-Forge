@@ -214,11 +214,18 @@ public class VillagerDataStorage
             File saveDir = this.getSaveDir();
             File file = new File(saveDir, this.getFileName());
 
-            if (file.exists() && file.isFile() && file.canRead())
+            if (file.exists())
             {
-                FileInputStream is = new FileInputStream(file);
-                this.readFromNBT(NbtIo.readCompressed(is, NbtSizeTracker.ofUnlimitedBytes()));
-                is.close();
+                if (file.isFile() && file.canRead())
+                {
+                    FileInputStream is = new FileInputStream(file);
+                    this.readFromNBT(NbtIo.readCompressed(is, NbtSizeTracker.ofUnlimitedBytes()));
+                    is.close();
+                }
+                else
+                {
+                    ItemScroller.logger.warn("VillagerDataStorage#readFromDisk(): Error reading villager data from file '{}'", file.getPath());
+                }
             }
         }
         catch (Exception e)
@@ -249,11 +256,18 @@ public class VillagerDataStorage
 
                 if (fileReal.exists())
                 {
-                    fileReal.delete();
+                    if (fileReal.delete() == false)
+                    {
+                        ItemScroller.logger.warn("VillagerDataStorage#writeToDisk(): failed to delete file {} ", fileReal.getName());
+                    }
                 }
 
-                fileTmp.renameTo(fileReal);
+                if (fileTmp.renameTo(fileReal) == false)
+                {
+                    ItemScroller.logger.warn("VillagerDataStorage#writeToDisk(): failed to delete file {} ", fileTmp.getName());
+                }
                 this.dirty = false;
+
             }
             catch (Exception e)
             {
