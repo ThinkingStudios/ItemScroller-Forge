@@ -1,4 +1,6 @@
 {
+    "fml.menu.mods.info.description.rocknroller": "ItemScroller unofficial (Neo)Forge port.\nMove items in inventory GUIs by scrolling the mouse wheel or dragging over slots.",
+
     "itemscroller.gui.button.config_gui.generic": "Generic",
     "itemscroller.gui.button.config_gui.hotkeys": "Hotkeys",
     "itemscroller.gui.button.config_gui.toggles": "Toggles",
