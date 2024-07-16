@@ -1,11 +1,17 @@
 package fi.dy.masa.itemscroller.recipes;
 
+import java.util.HashSet;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
+
+import fi.dy.masa.itemscroller.compat.carpet.StackingShulkerBoxes;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler.SlotRange;
@@ -16,6 +22,11 @@ public class RecipePattern
 {
     private ItemStack result = InventoryUtils.EMPTY_STACK;
     private ItemStack[] recipe = new ItemStack[9];
+    public CraftingRecipe cachedRecipeFromBook = null;
+    public RecipeEntry<CraftingRecipe> cachedRecipeEntryFromBook = null;
+
+    private int maxCraftAmount = 64;
+    private HashSet<Item> recipeRemainders = new HashSet<Item>();
 
     public RecipePattern()
     {
@@ -34,12 +45,31 @@ public class RecipePattern
     {
         Arrays.fill(this.recipe, InventoryUtils.EMPTY_STACK);
         this.result = InventoryUtils.EMPTY_STACK;
+        this.cachedRecipeFromBook = null;
+        this.maxCraftAmount = 64;
+        this.recipeRemainders.clear();
     }
 
     public void ensureRecipeSizeAndClearRecipe(int size)
     {
         this.ensureRecipeSize(size);
         this.clearRecipe();
+    }
+
+    public void initializeRecipe() {
+        for (int i = 0; i < this.recipe.length; i++) {
+            if (this.recipe[i].getItem().hasRecipeRemainder()) {
+                this.recipeRemainders.add(recipe[i].getItem().getRecipeRemainder());
+            }
+            int maxCount = StackingShulkerBoxes.getMaxCount(this.recipe[i]);
+            if (maxCount < maxCraftAmount) {
+                maxCraftAmount = maxCount;
+            }
+        }
+    }
+
+    public int getMaxCraftAmount() {
+        return maxCraftAmount;
     }
 
     public void storeCraftingRecipe(Slot slot, HandledScreen<? extends ScreenHandler> gui, boolean clearIfEmpty)
@@ -62,6 +92,7 @@ public class RecipePattern
                 }
 
                 this.result = slot.getStack().copy();
+                this.initializeRecipe();
             }
             else if (clearIfEmpty)
             {
@@ -83,6 +114,7 @@ public class RecipePattern
         }
 
         this.result = InventoryUtils.isStackEmpty(other.getResult()) == false ? other.getResult().copy() : InventoryUtils.EMPTY_STACK;
+        this.initializeRecipe();
     }
 
     public void readFromNBT(@Nonnull NbtCompound nbt)
@@ -110,6 +142,7 @@ public class RecipePattern
             }
 
             this.result = ItemStack.fromNbt(nbt.getCompound("Result"));
+            this.initializeRecipe();
         }
     }
 
@@ -156,6 +189,11 @@ public class RecipePattern
     public ItemStack[] getRecipeItems()
     {
         return this.recipe;
+    }
+
+    public HashSet<Item> getRecipeRemainders()
+    {
+        return this.recipeRemainders;
     }
 
     public boolean isValid()

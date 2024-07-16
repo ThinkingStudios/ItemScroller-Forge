@@ -17,6 +17,7 @@ public class Hotkeys
     public static final ConfigHotkey CRAFT_EVERYTHING           = new ConfigHotkey("craftEverything",       "LEFT_CONTROL,C", GUI_NO_ORDER, "Craft everything possible once with the currently selected recipe");
     public static final ConfigHotkey DROP_ALL_MATCHING          = new ConfigHotkey("dropAllMatching",       "LEFT_CONTROL,LEFT_SHIFT,Q", GUI_NO_ORDER, "Drop all stacks identical to the hovered stack");
     public static final ConfigHotkey MASS_CRAFT                 = new ConfigHotkey("massCraft",             "LEFT_CONTROL,LEFT_ALT,C", GUI_NO_ORDER, "Mass craft and throw out the results with the\ncurrently selected recipe as long as this\nkeybind is held down");
+    public static final ConfigHotkey MASS_CRAFT_TOGGLE          = new ConfigHotkey("massCraftToggle",   "", "Toggle mass craft");
     public static final ConfigHotkey MOVE_CRAFT_RESULTS         = new ConfigHotkey("moveCraftResults",      "LEFT_CONTROL,M", GUI_NO_ORDER, "Move all of the currently selected recipe's\noutput items from the player inventory\nto the other inventory");
     public static final ConfigHotkey RECIPE_VIEW                = new ConfigHotkey("recipeView",            "A", GUI_RELAXED, "Show the Item Scroller recipe GUI");
     public static final ConfigHotkey SLOT_DEBUG                 = new ConfigHotkey("slotDebug",             "LEFT_CONTROL,LEFT_ALT,LEFT_SHIFT,I", GUI_NO_ORDER, "Print debug info for the hovered slot or GUI");
@@ -57,6 +58,7 @@ public class Hotkeys
             CRAFT_EVERYTHING,
             DROP_ALL_MATCHING,
             MASS_CRAFT,
+            MASS_CRAFT_TOGGLE,
             MOVE_CRAFT_RESULTS,
             RECIPE_VIEW,
             SLOT_DEBUG,

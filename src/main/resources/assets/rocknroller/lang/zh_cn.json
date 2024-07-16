@@ -36,10 +36,8 @@
 	"enableVillagerTradeList":"Villager | 村民交易列表",
 	"Render a 1.14-style trade list in villager GUIs":"在村民gui中呈现一个1.14风格的交易列表\n（这不是1.16吗？？？？？？）",
 	
-	"carpetCtrlQCraftingEnabledOnServer":"carpetCtrlQCrafting | 地毯端CtrlQ启用",
-	"Set to true if the server is running the Carpet mod,\nand has the ctrlQCrafting option enabled.\nThis just changes which method Item Scroller uses\nfor the Drop key + Shift + Right click crafting.":"如果服务器正在运行地毯端则设置为开启，\n这将改变物品滚轮整组丢弃的使用方式\n变为丢弃+Shift+右击丢弃整组",
-	"clientCraftingFixOn1.12":"clientCrafting | 1.12客户端修复",
-	"Enable updating the crafting recipe output directly on the client side.\nThis fixes the quick/mass crafting and right-click-to-craft-a-stack\nfeatures othrwise being broken in 1.12.":"在客户端直接更新制作配方输出\n这修正了在1.12中快速/批量制造和右键点击制造所产生的不可使用的问题。",
+	"massCraftHold":"massCraftHold | 全部合成抛出",
+	"Mass craft continuously":"全部连续合成",
 	"craftingRenderRecipeItems":"craftingRenderRecipeItems | 配方显示",
 	"If enabled, then the recipe items are also rendered\nin the crafting recipe view.":"如果启用，那么配方物品也会呈现在制作配方视图中。",
 	"craftingRecipesSaveToFile":"craftingRecipes | 配方文件保存",
@@ -142,16 +140,12 @@
 	"Toggle all mod functionality ON/OFF":"打开/关闭所有mod功能",
 	"Modifier key to hold while middle clicking a trade,\nto toggle the global favorite state for that trade.\nGlobal favorites are used for villagers that don't\nhave any \"local\"/villager-specific favorites set.":"使用鼠标中键点击交易内容时按住快捷键\n切换该交易为全局最喜欢的状态（§d粉色星§f）\n全局的交易收藏夹只能用于没有任何\n“本地收藏夹（§e黄色星§f）”的村民",
 
-	"massCraftInhibitMidUpdates":"massCraft | 批量合成刷新优化",
-	"Prevent recipe output slot updates in the middle of moving items\nto the crafting grid. This should reduce CPU usage\nbecause of not constantly querying the recipe after every grid change.":"禁止批量合成时配方输出槽在材料移动到合成GUI的过程中更新。\n这将会减少CPU的占用，因为游戏会在每次合成配方更改后\n不断地查询配方并显示产物。",
+	"dropRecipeRemainder":"dropRecipeRemainder | 掉落配方残留",
+	"If enabled, recipe remainders are dropped.":"如果启用，则会掉落配方残留。",
+	"dropNonRecipeItems":"dropNonRecipeItems | 掉落非配方物品",
+	"If enabled, non recipe items in crafting grid are dropped.":"如果启用，合成网格中的非配方物品会掉落。",
 	"massCraftInterval":"massCraft | 批量合成速度",
 	"The interval in game ticks the massCraft operation is repeated at":"每tick中批量合成的次数",
-	"massCraftIterations":"massCraft | 批量合成尝试",
-	"How many massCraft iterations/attempts to do per execution.\nWith unstackable items or a full inventory and \"small recipe\"\nthis will need to be larger, as a shift + click craft to the inventory\nmight only craft 1 or 2 items per operation.":"设置每次执行多少次批量合成的迭代或者尝试，\n当玩家合成不可堆叠的物品时或背包已经满了的时候这类情况，\n这将需要玩家拥有更大的背包空间，\n因为使用shift单击合成时，\n背包中可能只进行1或2次合成操作。",
-	"massCraftSwapsOnly":"massCraft | 批量合成新方法",
-	"Uses a newer method of filling the crafting grid,\nusing only swap slot packets.\n\nNote: Due to only using slot swap packets,\nno partial crafts are possible! And also no\nstack splitting will happen, at all.":"使用新的方法填充配方GUI，\n只使用slot swap packets（槽位交换包)\n注意:由于只使用槽位交换包,不可能有部分的合成!\n而且也不会发生整组物品拆开的现象。",
-	"useRecipeCaching":"massCraft | 使用配方缓存",
-	"Enables caching the last used recipe in the crafting\nrecipe output item fetching code. This can help a lot\nwith lowering CPU usage when mass crafting stuff.":"在合成配方操作获取输出项时的参数中，\n传递缓存中最后使用的配方参数。\n当大量制作物品时，这可以大大降低CPU使用率。",
 	
 	"itemscroller.gui.title.configs": "%s 配置 - %s"
 }

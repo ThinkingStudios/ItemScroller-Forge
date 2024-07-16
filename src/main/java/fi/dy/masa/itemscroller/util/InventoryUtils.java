@@ -21,14 +21,17 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -67,78 +70,38 @@ public class InventoryUtils
     private static int slotNumberLast;
     private static boolean inhibitCraftResultUpdate;
 
-    public static void setInhibitCraftingOutputUpdate(boolean inhibitUpdate)
-    {
-        inhibitCraftResultUpdate = inhibitUpdate;
-    }
-
-    public static void onSlotChangedCraftingGrid(PlayerEntity player,
-                                                 RecipeInputInventory craftMatrix,
-                                                 CraftingResultInventory inventoryCraftResult)
-    {
-        if (inhibitCraftResultUpdate && Configs.Generic.MASS_CRAFT_INHIBIT_MID_UPDATES.getBooleanValue())
+    public static RecipeEntry<CraftingRecipe> getBookRecipeEntryFromPattern(RecipePattern recipe) {
+        if (recipe.cachedRecipeEntryFromBook != null) // Check if recipe is already cached (kindof unnecessary)
         {
-            return;
-        }
+            return recipe.cachedRecipeEntryFromBook;
+        } else {
+            Optional<RecipeEntry<CraftingRecipe>> optional = getRecipeFromPattern(recipe); // get book recipe if cache not found
 
-        if (Configs.Generic.CLIENT_CRAFTING_FIX.getBooleanValue())
-        {
-            updateCraftingOutputSlot(player, craftMatrix, inventoryCraftResult, true);
-        }
-    }
-
-    public static void updateCraftingOutputSlot(Slot outputSlot)
-    {
-        PlayerEntity player = MinecraftClient.getInstance().player;
-
-        if (player != null &&
-            outputSlot instanceof CraftingResultSlot resultSlot &&
-            resultSlot.inventory instanceof CraftingResultInventory resultInv)
-        {
-            RecipeInputInventory craftingInv = ((IMixinCraftingResultSlot) outputSlot).itemscroller_getCraftingInventory();
-            updateCraftingOutputSlot(player, craftingInv, resultInv, true);
-        }
-    }
-
-    public static void updateCraftingOutputSlot(PlayerEntity player,
-                                                RecipeInputInventory craftMatrix,
-                                                CraftingResultInventory inventoryCraftResult,
-                                                boolean setEmptyStack)
-    {
-        World world = player.getEntityWorld();
-
-        if ((world instanceof ClientWorld) && player instanceof ClientPlayerEntity)
-        {
-            ItemStack stack = ItemStack.EMPTY;
-            CraftingRecipe recipe = Configs.Generic.USE_RECIPE_CACHING.getBooleanValue() ? lastRecipe : null;
-            RecipeEntry<?> recipeEntry = null;
-
-            if (recipe == null || recipe.matches(craftMatrix, world) == false)
-            {
-                Optional<RecipeEntry<CraftingRecipe>> optional = world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, world);
-                recipe = optional.map(RecipeEntry::value).orElse(null);
-                recipeEntry = optional.orElse(null);
+            if (optional.isPresent()) {
+                recipe.cachedRecipeEntryFromBook = optional.get();
+                return recipe.cachedRecipeEntryFromBook;
             }
-
-            if (recipe != null)
-            {
-                if ((recipe.isIgnoredInRecipeBook() ||
-                     world.getGameRules().getBoolean(GameRules.DO_LIMITED_CRAFTING) == false ||
-                     ((ClientPlayerEntity) player).getRecipeBook().contains(recipeEntry)))
-                {
-                    inventoryCraftResult.setLastRecipe(recipeEntry);
-                    stack = recipe.craft(craftMatrix, MinecraftClient.getInstance().getNetworkHandler().getRegistryManager());
-                }
-
-                if (setEmptyStack || stack.isEmpty() == false)
-                {
-                    inventoryCraftResult.setStack(0, stack);
-                }
-
-            }
-
-            lastRecipe = recipe;
         }
+        return null;
+    }
+
+
+    public static Optional<RecipeEntry<CraftingRecipe>> getRecipeFromPattern(RecipePattern recipe) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        // Creates dummy inventories/containers.. probs a better way
+        RecipeManager recipeManager = mc.world.getRecipeManager();
+        ScreenHandler screenHandler = new Generic3x3ContainerScreenHandler(-1, mc.player.getInventory());
+        CraftingInventory search = new CraftingInventory(screenHandler, 3, 3);
+        ItemStack[] items = recipe.getRecipeItems();
+
+        // Set dummy slots with recipe pattern
+        for (int i = 0; i < items.length; i++) {
+            search.setStack(i, items[i]);
+            ;
+        }
+
+        return recipeManager.getFirstMatch(RecipeType.CRAFTING, search, mc.world);
     }
 
     public static String getStackString(ItemStack stack)
@@ -1154,19 +1117,14 @@ public class InventoryUtils
                                          boolean isLeftClick,
                                          boolean isRightClick,
                                          boolean isPickBlock,
-                                         boolean isShiftDown)
-    {
-        if (isLeftClick || isRightClick)
-        {
+                                         boolean isShiftDown) {
+        if (isLeftClick || isRightClick) {
             boolean changed = recipes.getSelection() != hoveredRecipeId;
             recipes.changeSelectedRecipe(hoveredRecipeId);
 
-            if (changed)
-            {
+            if (changed) {
                 InventoryUtils.clearFirstCraftingGridOfItems(recipes.getSelectedRecipe(), gui, false);
-            }
-            else
-            {
+            } else {
                 InventoryUtils.tryMoveItemsToFirstCraftingGrid(recipes.getRecipe(hoveredRecipeId), gui, isShiftDown);
             }
 
@@ -1176,42 +1134,23 @@ public class InventoryUtils
                 Slot outputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
                 boolean dropKeyDown = mc.options.dropKey.isPressed(); // FIXME 1.14
 
-                if (outputSlot != null)
-                {
-                    if (dropKeyDown)
-                    {
-                        if (isShiftDown)
-                        {
-                            if (Configs.Generic.CARPET_CTRL_Q_CRAFTING.getBooleanValue())
-                            {
-                                InventoryUtils.dropStack(gui, outputSlot.id);
-                            }
-                            else
-                            {
-                                InventoryUtils.dropStacksUntilEmpty(gui, outputSlot.id);
-                            }
-                        }
-                        else
-                        {
+                if (outputSlot != null) {
+                    if (dropKeyDown) {
+                        if (isShiftDown) {
+                            InventoryUtils.dropStacksUntilEmpty(gui, outputSlot.id);
+                        } else {
                             InventoryUtils.dropItem(gui, outputSlot.id);
                         }
-                    }
-                    else
-                    {
-                        if (isShiftDown)
-                        {
+                    } else {
+                        if (isShiftDown) {
                             InventoryUtils.shiftClickSlot(gui, outputSlot.id);
-                        }
-                        else
-                        {
+                        } else {
                             InventoryUtils.moveOneSetOfItemsFromSlotToPlayerInventory(gui, outputSlot);
                         }
                     }
                 }
             }
-        }
-        else if (isPickBlock)
-        {
+        } else if (isPickBlock) {
             InventoryUtils.clearFirstCraftingGridOfAllItems(gui);
         }
     }
@@ -1651,70 +1590,6 @@ public class InventoryUtils
                 {
                     dropAllMatchingStacks(gui, stack);
                 }
-            }
-        }
-    }
-
-    public static void setCraftingGridContentsUsingSwaps(HandledScreen<? extends ScreenHandler> gui,
-                                                         PlayerInventory inv,
-                                                         RecipePattern recipe,
-                                                         Slot outputSlot)
-    {
-        SlotRange range = CraftingHandler.getCraftingGridSlots(gui, outputSlot);
-
-        if (range != null && isStackEmpty(recipe.getResult()) == false)
-        {
-            ItemStack[] recipeItems = recipe.getRecipeItems();
-            final int invSlots = gui.getScreenHandler().slots.size();
-            final int rangeSlots = Math.min(range.getSlotCount(), recipeItems.length);
-            IntArrayList toRemove = new IntArrayList();
-            boolean movedSomething = false;
-
-            setInhibitCraftingOutputUpdate(true);
-
-            for (int i = 0, slotNum = range.getFirst(); i < rangeSlots && slotNum < invSlots; i++, slotNum++)
-            {
-                Slot slotTmp = gui.getScreenHandler().getSlot(slotNum);
-                ItemStack recipeStack = recipeItems[i];
-                ItemStack slotStack = slotTmp.getStack();
-                boolean recipeHasItem = isStackEmpty(recipeStack) == false;
-
-                if (areStacksEqual(recipeStack, slotStack) == false)
-                {
-                    if (recipeHasItem == false)
-                    {
-                        toRemove.add(slotNum);
-                    }
-                    else
-                    {
-                        int index = getPlayerInventoryIndexWithItem(recipeStack, inv);
-
-                        if (index >= 0)
-                        {
-                            clickSlot(gui, slotNum, index, SlotActionType.SWAP);
-                            movedSomething = true;
-                        }
-                    }
-                }
-            }
-
-            movedSomething |= (toRemove.isEmpty() == false);
-
-            for (int slotNum : toRemove)
-            {
-                shiftClickSlot(gui, slotNum);
-
-                if (isStackEmpty(gui.getScreenHandler().getSlot(slotNum).getStack()) == false)
-                {
-                    dropStack(gui, slotNum);
-                }
-            }
-
-            setInhibitCraftingOutputUpdate(false);
-
-            if (movedSomething)
-            {
-                updateCraftingOutputSlot(outputSlot);
             }
         }
     }

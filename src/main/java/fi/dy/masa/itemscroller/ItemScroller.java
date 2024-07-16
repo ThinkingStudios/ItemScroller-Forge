@@ -1,5 +1,6 @@
 package fi.dy.masa.itemscroller;
 
+import fi.dy.masa.itemscroller.compat.carpet.StackingShulkerBoxes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import fi.dy.masa.malilib.event.InitializationHandler;
@@ -10,5 +11,6 @@ public class ItemScroller {
     public static void onInitialize()
     {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
+        StackingShulkerBoxes.init();
     }
 }
