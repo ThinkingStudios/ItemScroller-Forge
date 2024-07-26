@@ -12,4 +12,14 @@ public class ItemScroller
     {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
     }
+
+    /*
+    public static void printDebug(String key, Object... args)
+    {
+        if (Configs.Generic.DEBUG_MESSAGES.getBooleanValue())
+        {
+            logger.info(key, args);
+        }
+    }
+     */
 }

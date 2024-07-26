@@ -10,10 +10,16 @@
 		"IMixinSlot",
 		"MixinAbstractInventoryScreen",
 		"MixinClientPlayerInteractionManager",
+		"MixinClientPlayNetworkHandler",
 		"MixinCraftingScreenHandler",
+		"MixinItemStack",
 		"MixinMerchantScreen",
 		"MixinMerchantScreenHandler",
+		"MixinRecipeBookWidget",
 		"MixinScreen"
+	],
+	"mixins": [
+		"debug.MixinServerPlayNetworkHandler"
 	],
 	"injectors": {
 		"defaultRequire": 1
