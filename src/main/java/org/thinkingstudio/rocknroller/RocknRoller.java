@@ -16,7 +16,7 @@ public class RocknRoller {
             ItemScroller.onInitialize();
 
             // Config Screen
-            NeoUtils.getInstance().registerModConfigScreen(modContainer, (screen) -> {
+            NeoUtils.getInstance().registerConfigScreen(modContainer, (screen) -> {
                 GuiConfigs gui = new GuiConfigs();
                 gui.setParent(screen);
                 return gui;

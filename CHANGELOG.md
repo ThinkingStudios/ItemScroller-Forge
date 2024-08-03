@@ -1,2 +1,2 @@
 ## Change
-- sync with `sakura-ryoko/itemscroller`
+- update MaFgLib version
