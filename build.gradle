@@ -9,9 +9,7 @@ version = "${libs.versions.version.get()}-mc${libs.versions.minecraft.version.ge
 group = libs.versions.maven.group
 
 loom {
-    neoForge {
-        accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
-    }
+    accessWidenerPath = file("src/main/resources/rocknroller.accesswidener")
 }
 
 repositories {
@@ -58,6 +56,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 
     withSourcesJar()
+}
+
+remapJar {
+    atAccessWideners.add("rocknroller.accesswidener")
 }
 
 // configure the maven publication
