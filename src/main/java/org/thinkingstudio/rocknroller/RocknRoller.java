@@ -2,7 +2,7 @@ package org.thinkingstudio.rocknroller;
 
 import fi.dy.masa.itemscroller.ItemScroller;
 import fi.dy.masa.itemscroller.Reference;
-import fi.dy.masa.malilib.compat.modmenu.ModMenuImpl;
+import fi.dy.masa.itemscroller.compat.modmenu.ModMenuImpl;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
