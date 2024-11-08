@@ -149,7 +149,9 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         {
             if (InputUtils.isRecipeViewOpen() && InventoryUtils.isCraftingSlot(gui, slot))
             {
-                recipes.storeCraftingRecipeToCurrentSelection(slot, gui, true);
+                recipes.storeCraftingRecipeToCurrentSelection(slot, gui, true, true, mc);
+                InventoryUtils.clearFirstCraftingGridOfAllItems(gui);
+                //InventoryUtils.clearCraftingGridCursorStack(gui, mc);
                 return true;
             }
         }
@@ -225,6 +227,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
             InventoryUtils.bufferInvUpdates = true;
             Slot outputSlot = CraftingHandler.getFirstCraftingOutputSlotForGui(gui);
 
+            // FIXME
             if (outputSlot != null)
             {
                 if (Configs.Generic.RATE_LIMIT_CLICK_PACKETS.getBooleanValue())
@@ -236,18 +239,16 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
 
                 int limit = Configs.Generic.MASS_CRAFT_ITERATIONS.getIntegerValue();
 
-                if (Configs.Generic.MASS_CRAFT_RECIPE_BOOK.getBooleanValue() && recipe.lookupVanillaRecipe(mc.world) != null)
+                if (Configs.Generic.MASS_CRAFT_RECIPE_BOOK.getBooleanValue() && recipe.getNetworkRecipeId() != null)
                 {
                     InventoryUtils.dontUpdateRecipeBook = 2;
                     for (int i = 0; i < limit; ++i)
                     {
                         // todo
                         //InventoryUtils.setInhibitCraftingOutputUpdate(true);
-                        //InventoryUtils.tryClearCursor(gui);
-                        //InventoryUtils.throwAllCraftingResultsToGround(recipe, gui);
 
                         RecipeInputInventory craftingInv = ((IMixinCraftingResultSlot) outputSlot).itemscroller_getCraftingInventory();
-                        if (!recipe.getVanillaRecipe().matches(craftingInv.createRecipeInput(), mc.world))
+                        if (recipe.getVanillaRecipe() != null && !recipe.getVanillaRecipe().matches(craftingInv.createRecipeInput(), mc.world))
                         {
                             CraftingHandler.SlotRange range = CraftingHandler.getCraftingGridSlots(gui, outputSlot);
                             final int invSlots = gui.getScreenHandler().slots.size();
@@ -266,24 +267,18 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
                             }
                         }
 
-                        mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, recipe.getVanillaRecipeEntry(), true);
+                        mc.interactionManager.clickRecipe(gui.getScreenHandler().syncId, recipe.getNetworkRecipeId(), true);
 //                        InventoryUtils.setInhibitCraftingOutputUpdate(false);
 //                        InventoryUtils.updateCraftingOutputSlot(outputSlot);
 
                         craftingInv = ((IMixinCraftingResultSlot) outputSlot).itemscroller_getCraftingInventory();
-                        if (recipe.getVanillaRecipe().matches(craftingInv.createRecipeInput(), mc.world))
+                        if (recipe.getVanillaRecipe() != null && recipe.getVanillaRecipe().matches(craftingInv.createRecipeInput(), mc.world))
                         {
                             break;
                         }
 
                         InventoryUtils.shiftClickSlot(gui, outputSlot.id);
-
-                        // This isn't required after 1.21, it only needs a single dropStack
-                        for (int k = 0; k < recipe.getResult().getMaxCount(); k++)
-                        {
-                            InventoryUtils.dropStack(gui, outputSlot.id);
-                        }
-
+                        InventoryUtils.dropStack(gui, outputSlot.id);
                         recipeBookClicks = true;
                     }
 

@@ -1,12 +1,12 @@
 [versions]
 # Base properties
-minecraft_version="1.21.1"
-yarn_mappings="1.21.1+build.3"
+minecraft_version="1.21.3"
+yarn_mappings="1.21.3+build.2"
 mappings_patch="1.21+build.4"
-neoforge="21.1.31"
+neoforge="21.3.12-beta"
 
 # Mod properties
-version="0.1.9"
+version="0.1.10"
 maven-group="org.thinkingstudio.rocknroller"
 archives-name="RocknRoller"
 
@@ -15,7 +15,7 @@ id-modrinth="hYq29QmW"
 id-curseforge="916852"
 
 # Mod dependencies
-mafglib="0.1.24-mc1.21.1"
+mafglib="0.1.25-mc1.21.3"
 badpackets="neo-0.8.1"
 
 # Libraries

@@ -3,6 +3,7 @@ package fi.dy.masa.itemscroller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import fi.dy.masa.malilib.event.InitializationHandler;
+import fi.dy.masa.itemscroller.config.Configs;
 
 public class ItemScroller
 {
@@ -13,7 +14,6 @@ public class ItemScroller
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
     }
 
-    /*
     public static void printDebug(String key, Object... args)
     {
         if (Configs.Generic.DEBUG_MESSAGES.getBooleanValue())
@@ -21,5 +21,4 @@ public class ItemScroller
             logger.info(key, args);
         }
     }
-     */
 }

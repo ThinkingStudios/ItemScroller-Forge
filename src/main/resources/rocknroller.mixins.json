@@ -1,25 +1,28 @@
 {
 	"required": true,
 	"package": "fi.dy.masa.itemscroller.mixin",
-	"compatibilityLevel": "JAVA_17",
+	"compatibilityLevel": "JAVA_21",
 	"minVersion": "0.8",
 	"client": [
+		"IMixinAbstractCraftingScreenHandler",
+		"IMixinClientRecipeBook",
 		"IMixinCraftingResultSlot",
 		"IMixinMerchantScreen",
+		"IMixinRecipeBookScreen",
+		"IMixinRecipeBookWidget",
 		"IMixinScreenWithHandler",
 		"IMixinSlot",
-		"MixinAbstractInventoryScreen",
+		"MixinAbstractCraftingRecipeBookWidget",
 		"MixinClientPlayerInteractionManager",
 		"MixinClientPlayNetworkHandler",
+		"MixinClientRecipeBook",
 		"MixinCraftingScreenHandler",
 		"MixinItemStack",
 		"MixinMerchantScreen",
 		"MixinMerchantScreenHandler",
 		"MixinRecipeBookWidget",
-		"MixinScreen"
-	],
-	"mixins": [
-		"debug.MixinServerPlayNetworkHandler"
+		"MixinScreen",
+		"MixinStatusEffectsDisplay"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -5,11 +5,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.recipe.NetworkRecipeId;
+import net.minecraft.recipe.RecipeDisplayEntry;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.screen.slot.Slot;
 
@@ -124,14 +127,14 @@ public class RecipeStorage
         return this.getRecipe(this.getSelection());
     }
 
-    public void storeCraftingRecipeToCurrentSelection(Slot slot, HandledScreen<?> gui, boolean clearIfEmpty)
+    public void storeCraftingRecipeToCurrentSelection(Slot slot, HandledScreen<?> gui, boolean clearIfEmpty, boolean fromKeybind, MinecraftClient mc)
     {
-        this.storeCraftingRecipe(this.getSelection(), slot, gui, clearIfEmpty);
+        this.storeCraftingRecipe(this.getSelection(), slot, gui, clearIfEmpty, fromKeybind, mc);
     }
 
-    public void storeCraftingRecipe(int index, Slot slot, HandledScreen<?> gui, boolean clearIfEmpty)
+    public void storeCraftingRecipe(int index, Slot slot, HandledScreen<?> gui, boolean clearIfEmpty, boolean fromKeybind, MinecraftClient mc)
     {
-        this.getRecipe(index).storeCraftingRecipe(slot, gui, clearIfEmpty);
+        this.getRecipe(index).storeCraftingRecipe(slot, gui, clearIfEmpty, fromKeybind, mc);
         this.dirty = true;
     }
 
@@ -139,6 +142,21 @@ public class RecipeStorage
     {
         this.getRecipe(index).clearRecipe();
         this.dirty = true;
+    }
+
+    public void onAddToRecipeBook(RecipeDisplayEntry entry)
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        for (RecipePattern recipe : this.recipes)
+        {
+            if (recipe.matchClientRecipeBookEntry(entry, mc))
+            {
+                recipe.storeNetworkRecipeId(entry.id(), true);
+                recipe.swapGhostNetworkRecipeId();
+                recipe.storeRecipeDisplayEntry(entry);
+            }
+        }
     }
 
     private void readFromNBT(NbtCompound nbt, @Nonnull DynamicRegistryManager registryManager)
@@ -166,13 +184,14 @@ public class RecipeStorage
             {
                 this.recipes[index].readFromNBT(tag, registryManager);
 
-                // TODO 1.21.2+
-                /*
                 if (tag.contains("LastNetworkId"))
                 {
-                    this.recipes[index].storeNetworkRecipeId(new NetworkRecipeId(tag.getInt("LastNetworkId")));
+                    this.recipes[index].storeNetworkRecipeId(new NetworkRecipeId(tag.getInt("LastNetworkId")), false);
                 }
-                 */
+                if (tag.contains("GhostNetworkId"))
+                {
+                    this.recipes[index].storeGhostNetworkRecipeId(new NetworkRecipeId(tag.getInt("GhostNetworkId")));
+                }
             }
         }
 
@@ -192,13 +211,15 @@ public class RecipeStorage
                 NbtCompound tag = entry.writeToNBT(registryManager);
                 tag.putByte("RecipeIndex", (byte) i);
 
-                // TODO 1.21.2+
-                /*
                 if (entry.getNetworkRecipeId() != null)
                 {
                     tag.putInt("LastNetworkId", entry.getNetworkRecipeId().index());
                 }
-                 */
+                if (entry.getGhostNetworkRecipeId() != null)
+                {
+                    tag.putInt("GhostNetworkId", entry.getGhostNetworkRecipeId().index());
+                }
+                tagRecipes.add(tag);
             }
         }
 

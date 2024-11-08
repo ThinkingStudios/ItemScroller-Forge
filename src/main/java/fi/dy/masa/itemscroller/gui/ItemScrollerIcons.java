@@ -1,5 +1,6 @@
 package fi.dy.masa.itemscroller.gui;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -62,7 +63,7 @@ public enum ItemScrollerIcons implements IGuiIcon
     }
 
     @Override
-    public void renderAt(int x, int y, float zLevel, boolean enabled, boolean selected)
+    public void renderAt(int x, int y, float zLevel, boolean enabled, boolean selected, DrawContext drawContext)
     {
         int u = this.u;
         int v = this.v;
