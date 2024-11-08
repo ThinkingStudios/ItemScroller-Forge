@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.ingame.CraftingScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import fi.dy.masa.malilib.config.ConfigUtils;
+import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.*;
@@ -19,17 +20,22 @@ import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.itemscroller.Reference;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler;
 import fi.dy.masa.itemscroller.recipes.CraftingHandler.SlotRange;
+import fi.dy.masa.itemscroller.util.SortingCategory;
+import fi.dy.masa.itemscroller.util.SortingMethod;
 
 public class Configs implements IConfigHandler
 {
     private static final String CONFIG_FILE_NAME = Reference.MOD_ID + ".json";
+
+    private static final ImmutableList<String> DEFAULT_TOP_SORTING = ImmutableList.of("minecraft:diamond_sword","minecraft:diamond_pickaxe","minecraft:diamond_axe","minecraft:diamond_shovel","minecraft:diamond_hoe","minecraft:netherite_sword","minecraft:netherite_pickaxe","minecraft:netherite_axe","minecraft:netherite_shovel","minecraft:netherite_hoe");
+    private static final ImmutableList<String> DEFAULT_BOTTOM_SORTING = ImmutableList.of();
 
     public static class Generic
     {
         public static final ConfigBoolean CARPET_CTRL_Q_CRAFTING                = new ConfigBoolean("carpetCtrlQCraftingEnabledOnServer",   false, "itemscroller.config.generic.comment.carpetCtrlQCraftingEnabledOnServer").translatedName("itemscroller.config.generic.name.carpetCtrlQCraftingEnabledOnServer");
         public static final ConfigBoolean CLIENT_CRAFTING_FIX                   = new ConfigBoolean("clientCraftingFixOn1.12",              true, "itemscroller.config.generic.comment.clientCraftingFixOn1_12").translatedName("itemscroller.config.generic.name.clientCraftingFixOn1_12");
         public static final ConfigBoolean CRAFTING_RENDER_RECIPE_ITEMS          = new ConfigBoolean("craftingRenderRecipeItems",            true, "itemscroller.config.generic.comment.craftingRenderRecipeItems").translatedName("itemscroller.config.generic.name.craftingRenderRecipeItems");
-        //public static final ConfigBoolean DEBUG_MESSAGES                        = new ConfigBoolean("debugMessages",                        false, "itemscroller.config.generic.comment.debugMessages").translatedName("itemscroller.config.generic.name.debugMessages");
+        public static final ConfigBoolean DEBUG_MESSAGES                        = new ConfigBoolean("debugMessages",                        false, "itemscroller.config.generic.comment.debugMessages").translatedName("itemscroller.config.generic.name.debugMessages");
         public static final ConfigBoolean MOD_MAIN_TOGGLE                       = new ConfigBoolean("modMainToggle",                        true, "itemscroller.config.generic.comment.modMainToggle").translatedName("itemscroller.config.generic.name.modMainToggle");
         public static final ConfigBoolean MASS_CRAFT_INHIBIT_MID_UPDATES        = new ConfigBoolean("massCraftInhibitMidUpdates",           true, "itemscroller.config.generic.comment.massCraftInhibitMidUpdates").translatedName("itemscroller.config.generic.name.massCraftInhibitMidUpdates");
         public static final ConfigInteger MASS_CRAFT_INTERVAL                   = new ConfigInteger("massCraftInterval",                    2, 1, 60, "itemscroller.config.generic.comment.massCraftInterval").translatedName("itemscroller.config.generic.name.massCraftInterval");
@@ -46,14 +52,23 @@ public class Configs implements IConfigHandler
         public static final ConfigBoolean SLOT_POSITION_AWARE_SCROLL_DIRECTION  = new ConfigBoolean("useSlotPositionAwareScrollDirection",  false, "itemscroller.config.generic.comment.useSlotPositionAwareScrollDirection").translatedName("itemscroller.config.generic.name.useSlotPositionAwareScrollDirection");
         public static final ConfigBoolean VILLAGER_TRADE_USE_GLOBAL_FAVORITES   = new ConfigBoolean("villagerTradeUseGlobalFavorites",      true, "itemscroller.config.generic.comment.villagerTradeUseGlobalFavorites").translatedName("itemscroller.config.generic.name.villagerTradeUseGlobalFavorites");
         public static final ConfigBoolean VILLAGER_TRADE_LIST_REMEMBER_SCROLL   = new ConfigBoolean("villagerTradeListRememberScrollPosition", true, "itemscroller.config.generic.comment.villagerTradeListRememberScrollPosition").translatedName("itemscroller.config.generic.name.villagerTradeListRememberScrollPosition");
+
+        public static final ConfigBoolean SORT_INVENTORY_TOGGLE                 = new ConfigBoolean("sortInventoryToggle",                  false, "itemscroller.config.generic.comment.sortInventoryToggle").translatedName("itemscroller.config.generic.name.sortInventoryToggle");
         public static final ConfigBoolean SORT_ASSUME_EMPTY_BOX_STACKS          = new ConfigBoolean("sortAssumeEmptyBoxStacks",             true, "itemscroller.config.generic.comment.sortAssumeEmptyBoxStacks").translatedName("itemscroller.config.generic.name.sortAssumeEmptyBoxStacks");
         public static final ConfigBoolean SORT_SHULKER_BOXES_AT_END             = new ConfigBoolean("sortShulkerBoxesAtEnd",                true, "itemscroller.config.generic.comment.sortShulkerBoxesAtEnd").translatedName("itemscroller.config.generic.name.sortShulkerBoxesAtEnd");
+        public static final ConfigBoolean SORT_SHULKER_BOXES_INVERTED           = new ConfigBoolean("sortShulkerBoxesInverted",             false, "itemscroller.config.generic.comment.sortShulkerBoxesInverted").translatedName("itemscroller.config.generic.name.sortShulkerBoxesInverted");
+        public static final ConfigBoolean SORT_BUNDLES_AT_END                   = new ConfigBoolean("sortBundlesAtEnd",                     true, "itemscroller.config.generic.comment.sortBundlesAtEnd").translatedName("itemscroller.config.generic.name.sortBundlesAtEnd");
+        public static final ConfigBoolean SORT_BUNDLES_INVERTED                 = new ConfigBoolean("sortBundlesInverted",                  false, "itemscroller.config.generic.comment.sortBundlesInverted").translatedName("itemscroller.config.generic.name.sortBundlesInverted");
+        public static final ConfigStringList SORT_TOP_PRIORITY_INVENTORY        = new ConfigStringList("sortTopPriorityInventory",           DEFAULT_TOP_SORTING, "itemscroller.config.generic.comment.sortTopPriorityInventory").translatedName("itemscroller.config.generic.name.sortTopPriorityInventory");
+        public static final ConfigStringList SORT_BOTTOM_PRIORITY_INVENTORY     = new ConfigStringList("sortBottomPriorityInventory",        DEFAULT_BOTTOM_SORTING, "itemscroller.config.generic.comment.sortBottomPriorityInventory").translatedName("itemscroller.config.generic.name.sortBottomPriorityInventory");
+        public static final ConfigOptionList SORT_METHOD_DEFAULT                = new ConfigOptionList("sortMethodDefault",                  SortingMethod.CATEGORY_NAME, "itemscroller.config.generic.comment.sortMethodDefault").translatedName("itemscroller.config.generic.name.sortMethodDefault");
+        public static final ConfigLockedList SORT_CATEGORY_ORDER                = new ConfigLockedList("sortCategoryOrder",                  SortingCategory.INSTANCE, "itemscroller.config.generic.comment.sortCategoryOrder").translatedName("itemscroller.config.generic.name.sortCategoryOrder");
 
-        public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
+        public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CARPET_CTRL_Q_CRAFTING,
                 CLIENT_CRAFTING_FIX,
                 CRAFTING_RENDER_RECIPE_ITEMS,
-                //DEBUG_MESSAGES,
+                DEBUG_MESSAGES,
                 MASS_CRAFT_INHIBIT_MID_UPDATES,
                 MASS_CRAFT_INTERVAL,
                 MASS_CRAFT_ITERATIONS,
@@ -71,8 +86,16 @@ public class Configs implements IConfigHandler
                 VILLAGER_TRADE_USE_GLOBAL_FAVORITES,
                 VILLAGER_TRADE_LIST_REMEMBER_SCROLL,
 
+                SORT_INVENTORY_TOGGLE,
                 SORT_ASSUME_EMPTY_BOX_STACKS,
-                SORT_SHULKER_BOXES_AT_END
+                SORT_SHULKER_BOXES_AT_END,
+                SORT_SHULKER_BOXES_INVERTED,
+                SORT_BUNDLES_AT_END,
+                SORT_BUNDLES_INVERTED,
+                SORT_TOP_PRIORITY_INVENTORY,
+                SORT_BOTTOM_PRIORITY_INVENTORY,
+                SORT_METHOD_DEFAULT,
+                SORT_CATEGORY_ORDER
         );
     }
 

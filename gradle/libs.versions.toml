@@ -6,7 +6,7 @@ mappings_patch="1.21+build.4"
 neoforge="21.1.31"
 
 # Mod properties
-version="0.1.8"
+version="0.1.9"
 maven-group="org.thinkingstudio.rocknroller"
 archives-name="RocknRoller"
 
@@ -15,14 +15,14 @@ id-modrinth="hYq29QmW"
 id-curseforge="916852"
 
 # Mod dependencies
-mafglib="0.1.22-mc1.21.1"
+mafglib="0.1.24-mc1.21.1"
 badpackets="neo-0.8.1"
 
 # Libraries
 jsr305="3.0.2"
 
 # Gradle plugin
-architectury-loom = "1.6-SNAPSHOT"
+architectury-loom = "1.7-SNAPSHOT"
 modpublisher = "2.+"
 
 [libraries]

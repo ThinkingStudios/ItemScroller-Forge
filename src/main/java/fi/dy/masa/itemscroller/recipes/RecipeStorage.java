@@ -165,13 +165,21 @@ public class RecipeStorage
             if (index >= 0 && index < this.recipes.length)
             {
                 this.recipes[index].readFromNBT(tag, registryManager);
+
+                // TODO 1.21.2+
+                /*
+                if (tag.contains("LastNetworkId"))
+                {
+                    this.recipes[index].storeNetworkRecipeId(new NetworkRecipeId(tag.getInt("LastNetworkId")));
+                }
+                 */
             }
         }
 
         this.changeSelectedRecipe(nbt.getByte("Selected"));
     }
 
-    private NbtCompound writeToNBT(DynamicRegistryManager registryManager)
+    private NbtCompound writeToNBT(@Nonnull DynamicRegistryManager registryManager)
     {
         NbtList tagRecipes = new NbtList();
         NbtCompound nbt = new NbtCompound();
@@ -180,10 +188,17 @@ public class RecipeStorage
         {
             if (this.recipes[i].isValid())
             {
-
-                NbtCompound tag = this.recipes[i].writeToNBT(registryManager);
+                RecipePattern entry = this.recipes[i];
+                NbtCompound tag = entry.writeToNBT(registryManager);
                 tag.putByte("RecipeIndex", (byte) i);
-                tagRecipes.add(tag);
+
+                // TODO 1.21.2+
+                /*
+                if (entry.getNetworkRecipeId() != null)
+                {
+                    tag.putInt("LastNetworkId", entry.getNetworkRecipeId().index());
+                }
+                 */
             }
         }
 

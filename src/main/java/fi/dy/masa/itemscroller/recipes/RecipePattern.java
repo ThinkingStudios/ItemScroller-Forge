@@ -55,6 +55,7 @@ public class RecipePattern
         this.clearRecipe();
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public <T extends RecipeInput> Recipe<T> lookupVanillaRecipe(World world) {
         //Assume all recipes here are of type CraftingRecipe
