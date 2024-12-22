@@ -15,7 +15,7 @@ id-modrinth="hYq29QmW"
 id-curseforge="916852"
 
 # Mod dependencies
-mafglib="0.1.24-mc1.21.1"
+mafglib="0.2.1-mc1.21.1"
 badpackets="neo-0.8.1"
 
 # Libraries

@@ -86,7 +86,7 @@ public class RecipePattern
         return null;
     }
 
-    public void storeCraftingRecipe(Slot slot, HandledScreen<? extends ScreenHandler> gui, boolean clearIfEmpty)
+    public void storeCraftingRecipe(Slot slot, HandledScreen<? extends ScreenHandler> gui, boolean clearIfEmpty, boolean fromKeybind, MinecraftClient mc)
     {
         SlotRange range = CraftingHandler.getCraftingGridSlots(gui, slot);
 
@@ -213,6 +213,36 @@ public class RecipePattern
         return this.recipe;
     }
 
+    public boolean isEmpty()
+    {
+        boolean empty = true;
+
+        for (int i = 0; i < this.getRecipeLength(); i++)
+        {
+            if (!this.getRecipeItems()[i].isEmpty())
+            {
+                empty = false;
+            }
+        }
+
+        return empty || this.getResult().isEmpty();
+    }
+
+    public int countRecipeItems()
+    {
+        int count = 0;
+
+        for (ItemStack itemStack : this.recipe)
+        {
+            if (!itemStack.isEmpty())
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     public boolean isValid()
     {
         return InventoryUtils.isStackEmpty(this.getResult()) == false;
@@ -221,17 +251,23 @@ public class RecipePattern
     @Nullable
     public RecipeEntry<?> getVanillaRecipeEntry()
     {
-        return vanillaRecipe;
+        return this.vanillaRecipe;
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
     public <T extends RecipeInput> Recipe<T> getVanillaRecipe()
     {
-        if (recipe == null)
+        if (this.recipe == null)
         {
             return null;
         }
-        return (Recipe<T>) vanillaRecipe.value();
+
+        if (this.vanillaRecipe != null)
+        {
+            return (Recipe<T>) this.vanillaRecipe.value();
+        }
+
+        return null;
     }
 }

@@ -43,9 +43,8 @@ public class RenderEventHandler
 
     public void renderRecipeView(DrawContext drawContext)
     {
-        if (GuiUtils.getCurrentScreen() instanceof HandledScreen && InputUtils.isRecipeViewOpen())
+        if (GuiUtils.getCurrentScreen() instanceof HandledScreen<?> gui && InputUtils.isRecipeViewOpen())
         {
-            HandledScreen<?> gui = (HandledScreen<?>) GuiUtils.getCurrentScreen();
             RecipeStorage recipes = RecipeStorage.getInstance();
             final int first = recipes.getFirstVisibleRecipeId();
             final int countPerPage = recipes.getRecipeCountPerPage();

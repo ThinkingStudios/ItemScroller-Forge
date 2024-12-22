@@ -47,7 +47,7 @@ public abstract class MixinMerchantScreenHandler extends ScreenHandler implement
     }
 
     @Override
-    public TradeOfferList getOriginalList()
+    public TradeOfferList itemscroller$getOriginalList()
     {
         return this.merchant.getOffers();
     }

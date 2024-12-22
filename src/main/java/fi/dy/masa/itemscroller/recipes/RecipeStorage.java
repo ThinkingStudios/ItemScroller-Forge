@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import javax.annotation.Nonnull;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
@@ -124,14 +125,14 @@ public class RecipeStorage
         return this.getRecipe(this.getSelection());
     }
 
-    public void storeCraftingRecipeToCurrentSelection(Slot slot, HandledScreen<?> gui, boolean clearIfEmpty)
+    public void storeCraftingRecipeToCurrentSelection(Slot slot, HandledScreen<?> gui, boolean clearIfEmpty, boolean fromKeybind, MinecraftClient mc)
     {
-        this.storeCraftingRecipe(this.getSelection(), slot, gui, clearIfEmpty);
+        this.storeCraftingRecipe(this.getSelection(), slot, gui, clearIfEmpty, fromKeybind, mc);
     }
 
-    public void storeCraftingRecipe(int index, Slot slot, HandledScreen<?> gui, boolean clearIfEmpty)
+    public void storeCraftingRecipe(int index, Slot slot, HandledScreen<?> gui, boolean clearIfEmpty, boolean fromKeybind, MinecraftClient mc)
     {
-        this.getRecipe(index).storeCraftingRecipe(slot, gui, clearIfEmpty);
+        this.getRecipe(index).storeCraftingRecipe(slot, gui, clearIfEmpty, fromKeybind, mc);
         this.dirty = true;
     }
 
@@ -140,6 +141,28 @@ public class RecipeStorage
         this.getRecipe(index).clearRecipe();
         this.dirty = true;
     }
+
+    // TODO 1.21.2+
+    /*
+    public void onAddToRecipeBook(RecipeDisplayEntry entry)
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        for (RecipePattern recipe : this.recipes)
+        {
+            if (!recipe.isEmpty())
+            {
+                if (recipe.matchClientRecipeBookEntry(entry, mc))
+                {
+                    ItemScroller.printDebug("onAddToRecipeBook(): Positive Match for result stack: [{}] networkId [{}]", recipe.getResult().toString(), entry.id().index());
+                    recipe.storeNetworkRecipeId(entry.id());
+                    recipe.storeRecipeCategory(entry.category());
+                    recipe.storeRecipeDisplayEntry(entry);
+                }
+            }
+        }
+    }
+     */
 
     private void readFromNBT(NbtCompound nbt, @Nonnull DynamicRegistryManager registryManager)
     {
@@ -168,6 +191,10 @@ public class RecipeStorage
 
                 // TODO 1.21.2+
                 /*
+                if (tag.contains("RecipeCategory", Constants.NBT.TAG_STRING))
+                {
+                    this.recipes[index].storeRecipeCategory(RecipeUtils.getRecipeCategoryFromId(tag.getString("RecipeCategory")));
+                }
                 if (tag.contains("LastNetworkId"))
                 {
                     this.recipes[index].storeNetworkRecipeId(new NetworkRecipeId(tag.getInt("LastNetworkId")));
@@ -194,11 +221,22 @@ public class RecipeStorage
 
                 // TODO 1.21.2+
                 /*
+                if (entry.getRecipeCategory() != null)
+                {
+                    String id = RecipeUtils.getRecipeCategoryId(entry.getRecipeCategory());
+
+                    if (!id.isEmpty())
+                    {
+                        tag.putString("RecipeCategory", id);
+                    }
+                }
                 if (entry.getNetworkRecipeId() != null)
                 {
                     tag.putInt("LastNetworkId", entry.getNetworkRecipeId().index());
                 }
                  */
+
+                tagRecipes.add(tag);
             }
         }
 

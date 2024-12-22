@@ -14,6 +14,7 @@ import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
+import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -49,6 +50,8 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         {
             hotkey.getKeybind().setCallback(this);
         }
+
+        Hotkeys.MASS_CRAFT_TOGGLE.getKeybind().setCallback(new KeyCallbackToggleBooleanConfigWithMessage(Configs.Generic.MASS_CRAFT_HOLD));
     }
 
     public boolean functionalityEnabled()
@@ -149,7 +152,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         {
             if (InputUtils.isRecipeViewOpen() && InventoryUtils.isCraftingSlot(gui, slot))
             {
-                recipes.storeCraftingRecipeToCurrentSelection(slot, gui, true);
+                recipes.storeCraftingRecipeToCurrentSelection(slot, gui, true, true, mc);
                 return true;
             }
         }
@@ -215,7 +218,7 @@ public class KeybindCallbacks implements IHotkeyCallback, IClientTickHandler
         if (GuiUtils.getCurrentScreen() instanceof HandledScreen<?> gui &&
             (GuiUtils.getCurrentScreen() instanceof CreativeInventoryScreen) == false &&
             Configs.GUI_BLACKLIST.contains(GuiUtils.getCurrentScreen().getClass().getName()) == false &&
-            Hotkeys.MASS_CRAFT.getKeybind().isKeybindHeld())
+            (Hotkeys.MASS_CRAFT.getKeybind().isKeybindHeld() || Configs.Generic.MASS_CRAFT_HOLD.getBooleanValue()))
         {
             if (++this.massCraftTicker < Configs.Generic.MASS_CRAFT_INTERVAL.getIntegerValue())
             {

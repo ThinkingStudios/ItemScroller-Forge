@@ -1,5 +1,8 @@
 package fi.dy.masa.itemscroller.mixin;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.screen.ScreenHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
