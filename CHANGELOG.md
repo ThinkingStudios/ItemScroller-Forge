@@ -1,2 +1,2 @@
 ## Change
-- sync with `sakura-ryoko/itemscroller` 1.21.3-0.25.2-sakura.3
+- sync with `sakura-ryoko/itemscroller` 1.21.3-0.25.2
