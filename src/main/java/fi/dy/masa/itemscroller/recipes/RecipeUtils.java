@@ -12,6 +12,8 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
+import fi.dy.masa.itemscroller.mixin.IMixinIngredient;
+
 public class RecipeUtils
 {
     public static String getRecipeCategoryId(RecipeBookCategory category)
@@ -60,16 +62,25 @@ public class RecipeUtils
             while (lStack.isEmpty())
             {
                 lPos++;
-                lStack = left.get(lPos);
-                //System.out.printf("compare() [%d] left [%s] (Advance Left), right [%d]\n", lPos, lStack.toString(), i);
+                
+                if (lPos < 9)
+                {
+                    lStack = left.get(lPos);
+                    //System.out.printf(" compare() [%d] left [%s] (Advance Left), right [%d]\n", lPos, lStack.toString(), i);
+                }
+                else
+                {
+                    break;
+                }
             }
 
-            List<RegistryEntry<Item>> rItems = ri.getMatchingItems();
+            List<RegistryEntry<Item>> rItems = ((IMixinIngredient) (Object) ri).itemscroller_getEntries().stream().toList();
+            //List<RegistryEntry<Item>> rItems = ri.getMatchingItems().toList();
             boolean match = false;
 
             for (RegistryEntry<Item> rItem : rItems)
             {
-                //System.out.printf("compare() [%d] left [%s] / [%d] right [%s]\n", lPos, lStack, i, rItem.getIdAsString());
+                //System.out.printf(" compare() [%d] left [%s] / [%d] right [%s]\n", lPos, lStack, i, rItem.getIdAsString());
 
                 if (ri.test(lStack))
                 {
@@ -104,35 +115,36 @@ public class RecipeUtils
     {
         int i = 0;
 
-        //System.out.printf("DUMP [%s] -->\n", side);
+        System.out.printf("DUMP [%s] -->\n", side);
         for (ItemStack stack : stacks)
         {
-            //System.out.printf("%s[%d] // [%s]\n", side, i, stack.toString());
+            System.out.printf("%s[%d] // [%s]\n", side, i, stack.toString());
             i++;
         }
-        //System.out.printf("DUMP END [%s]\n", side);
+        System.out.printf("DUMP END [%s]\n", side);
     }
 
     private static void dumpIngs(List<Ingredient> ings, String side)
     {
         int i = 0;
 
-        //System.out.printf("DUMP [%s] -->\n", side);
+        System.out.printf("DUMP [%s] -->\n", side);
         for (Ingredient ing : ings)
         {
-            List<RegistryEntry<Item>> items = ing.getMatchingItems();
+            //List<RegistryEntry<Item>> items = ing.getMatchingItems().toList();
+            List<RegistryEntry<Item>> items = ((IMixinIngredient) (Object) ing).itemscroller_getEntries().stream().toList();
 
-            //System.out.printf("%s[%d] //", side, i);
+            System.out.printf("%s[%d] //", side, i);
 
             for (RegistryEntry<Item> item : items)
             {
-                //System.out.printf(" [%s]", item.getIdAsString());
+                System.out.printf(" [%s]", item.getIdAsString());
             }
 
-            //System.out.print("// []\n");
+            System.out.print("// []\n");
             i++;
         }
 
-        //System.out.printf("DUMP END [%s]\n", side);
+        System.out.printf("DUMP END [%s]\n", side);
     }
 }

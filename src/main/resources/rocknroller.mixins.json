@@ -24,6 +24,9 @@
 		"MixinScreen",
 		"MixinStatusEffectsDisplay"
 	],
+	"mixins": [
+		"IMixinIngredient"
+	],
 	"injectors": {
 		"defaultRequire": 1
 	}
