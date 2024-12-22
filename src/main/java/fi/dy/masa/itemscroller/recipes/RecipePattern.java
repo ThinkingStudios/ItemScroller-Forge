@@ -1,7 +1,9 @@
 package fi.dy.masa.itemscroller.recipes;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
@@ -15,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.*;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.display.SlotDisplayContexts;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.recipe.input.RecipeInput;
@@ -39,10 +42,9 @@ public class RecipePattern
     private ItemStack[] recipe = new ItemStack[9];
     private RecipeEntry<?> vanillaRecipe;
     private NetworkRecipeId networkRecipeId;
-    private NetworkRecipeId ghostNetworkRecipeId;
     private RecipeDisplayEntry displayEntry;
-    private long lastMassCraft;
-    private long altTimeoutMillis = 6000L;
+    private RecipeBookCategory category;
+    private long recipeSaveTime;
 
     public RecipePattern()
     {
@@ -63,9 +65,9 @@ public class RecipePattern
         this.result = InventoryUtils.EMPTY_STACK;
         this.vanillaRecipe = null;
         this.networkRecipeId = null;
-        this.ghostNetworkRecipeId = null;
         this.displayEntry = null;
-        this.lastMassCraft = -1;
+        this.category = null;
+        this.recipeSaveTime = -1;
     }
 
     public void ensureRecipeSizeAndClearRecipe(int size)
@@ -138,39 +140,14 @@ public class RecipePattern
             return;
         }
 
-        this.storeNetworkRecipeId(pair.getLeft(), false);
+        this.storeNetworkRecipeId(pair.getLeft());
+        this.storeRecipeCategory(pair.getRight().category());
         this.storeRecipeDisplayEntry(pair.getRight());
     }
 
-    public void storeNetworkRecipeId(NetworkRecipeId id, boolean saveGhost)
+    public void storeNetworkRecipeId(NetworkRecipeId id)
     {
-        if (this.networkRecipeId != null && id.index() != this.networkRecipeId.index() && saveGhost)
-        {
-            this.storeGhostNetworkRecipeId(this.networkRecipeId);
-        }
-        else
-        {
-            this.ghostNetworkRecipeId = null;
-        }
-
         this.networkRecipeId = id;
-    }
-
-    public void storeGhostNetworkRecipeId(NetworkRecipeId id)
-    {
-        this.ghostNetworkRecipeId = id;
-    }
-
-    public void swapGhostNetworkRecipeId()
-    {
-        // The 'Ghost' RecipeId is usually a higher index() number than the real recipe, or the "Inverse" recipe of the one being crafted.
-        // We just need to be able to handle the swap at the correct time.
-        if (this.getGhostNetworkRecipeId() != null)
-        {
-            NetworkRecipeId last = this.getNetworkRecipeId();
-            this.storeNetworkRecipeId(this.getGhostNetworkRecipeId(), false);
-            this.storeGhostNetworkRecipeId(last);
-        }
     }
 
     public void storeRecipeDisplayEntry(RecipeDisplayEntry entry)
@@ -178,14 +155,14 @@ public class RecipePattern
         this.displayEntry = entry;
     }
 
+    public void storeRecipeCategory(RecipeBookCategory category)
+    {
+        this.category = category;
+    }
+
     public @Nullable NetworkRecipeId getNetworkRecipeId()
     {
         return this.networkRecipeId;
-    }
-
-    public @Nullable NetworkRecipeId getGhostNetworkRecipeId()
-    {
-        return this.ghostNetworkRecipeId;
     }
 
     public @Nullable RecipeDisplayEntry getRecipeDisplayEntry()
@@ -193,18 +170,28 @@ public class RecipePattern
         return this.displayEntry;
     }
 
+    public @Nullable RecipeBookCategory getRecipeCategory()
+    {
+        return this.category;
+    }
+
+    public boolean matchRecipeCategory(RecipeBookCategory category)
+    {
+        return this.getRecipeCategory() != null && this.getRecipeCategory().equals(category);
+    }
+
     public @Nullable Pair<NetworkRecipeId, RecipeDisplayEntry> matchClientRecipeBook(MinecraftClient mc)
     {
-        Pair<NetworkRecipeId, RecipeDisplayEntry> pair = null;
+        Pair<NetworkRecipeId, RecipeDisplayEntry> pair;
 
-        if (mc.player == null || mc.world == null)
+        if (mc.player == null || mc.world == null || this.isEmpty())
         {
             return null;
         }
+
         ClientRecipeBook recipeBook = mc.player.getRecipeBook();
         ContextParameterMap ctx = SlotDisplayContexts.createParameters(mc.world);
         Map<NetworkRecipeId, RecipeDisplayEntry> recipeMap = ((IMixinClientRecipeBook) recipeBook).itemscroller_getRecipeMap();
-        List<ItemStack> recipeStacks = this.combineStacks(Arrays.stream(this.getRecipeItems()).toList(), 3);
 
         if (recipeMap.size() < 1)
         {
@@ -213,165 +200,51 @@ public class RecipePattern
 
         for (NetworkRecipeId id : recipeMap.keySet())
         {
-            List<ItemStack> stacks = recipeMap.get(id).getStacks(ctx);
+            RecipeDisplayEntry entry = recipeMap.get(id);
 
-            if (this.compareRecipeStacks(recipeStacks, this.combineStacks(stacks, 3)))
+            if (entry != null)
             {
-                pair = Pair.of(id, recipeMap.get(id));
-                return pair;
+                if (this.getRecipeCategory() != null && !this.matchRecipeCategory(entry.category()))
+                {
+                    continue;
+                }
+
+                List<ItemStack> stacks = entry.getStacks(ctx);
+
+                if (RecipeUtils.areStacksEqual(this.getResult(), stacks.getFirst()))
+                {
+                    pair = Pair.of(id, entry);
+                    return pair;
+                }
             }
         }
 
         return null;
     }
 
-    public static List<ItemStack> combineStacks(List<ItemStack> stacks, int iterations)
-    {
-        if (iterations > 3 || iterations < 1)
-        {
-            iterations = 3;
-        }
-
-        List<ItemStack> list = new ArrayList<>(stacks);
-        int i = 0;
-
-        while (i < iterations)
-        {
-            list = combineStacksEach(list);
-            i++;
-        }
-
-        return list;
-    }
-
-    private static List<ItemStack> combineStacksEach(List<ItemStack> stacks)
-    {
-        List<ItemStack> list = new ArrayList<>();
-        ItemStack previous = ItemStack.EMPTY;
-        ItemStack entry = ItemStack.EMPTY;
-
-        for (int i = 0; i < stacks.size(); i++)
-        {
-            entry = stacks.get(i);
-
-            if (!previous.isEmpty() && ItemStack.areItemsAndComponentsEqual(previous, entry))
-            {
-                int prevCount = previous.getCount();
-                int maxCount = previous.getMaxCount();
-                int entryCount = entry.getCount();
-
-                if ((prevCount + entryCount) <= maxCount)
-                {
-                    previous.setCount(prevCount + entryCount);
-                    entry = ItemStack.EMPTY;
-                }
-                else
-                {
-                    previous.setCount(maxCount);
-                    entry.setCount((prevCount + entryCount) - maxCount);
-                    list.add(previous.copy());
-                    previous = entry.copy();
-                    entry = ItemStack.EMPTY;
-                }
-            }
-            else
-            {
-                if (!previous.isEmpty())
-                {
-                    list.add(previous.copy());
-                }
-
-                previous = entry.copy();
-                entry = ItemStack.EMPTY;
-            }
-        }
-
-        if (!previous.isEmpty())
-        {
-            list.add(previous.copy());
-        }
-        if (!entry.isEmpty())
-        {
-            list.add(entry.copy());
-        }
-
-        return list;
-    }
-
-    private boolean compareRecipeStacks(List<ItemStack> left, List<ItemStack> right)
-    {
-        if (left.size() != right.size())
-        {
-            return false;
-        }
-
-        for (int i = 0; i < left.size(); i++)
-        {
-            ItemStack l = left.get(i);
-            ItemStack r = right.get(i);
-
-            //System.out.printf("compare() [%d] left [%s] / right [%s] --> ", i, l.toString(), r.toString());
-
-            if (ItemStack.areItemsEqual(l, r) == false)
-            {
-                //System.out.print(" not equal\n");
-                return false;
-            }
-            else if (l.getCount() != r.getCount())
-            {
-                //System.out.print(" count not equal\n");
-                return false;
-            }
-        }
-
-        //System.out.print(" PASS\n");
-        return true;
-    }
-
-    public boolean verifyClientRecipeBook(MinecraftClient mc, @Nullable NetworkRecipeId id)
-    {
-        if (id != null)
-        {
-            if (id.equals(this.getNetworkRecipeId()))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        Pair<NetworkRecipeId, RecipeDisplayEntry> pair = this.matchClientRecipeBook(mc);
-
-        if (pair == null || pair.getLeft() == null)
-        {
-            return false;
-        }
-
-        if (this.getNetworkRecipeId() != null && pair.getLeft().index() == this.getNetworkRecipeId().index())
-        {
-            return true;
-        }
-        else if (this.getGhostNetworkRecipeId() != null && pair.getLeft().index() == this.getGhostNetworkRecipeId().index())
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     public boolean matchClientRecipeBookEntry(RecipeDisplayEntry entry, MinecraftClient mc)
     {
-        if (mc.world == null)
+        if (mc.world == null || this.isEmpty())
         {
             return false;
         }
 
-        // Compact the stacks so that they equal
-        List<ItemStack> recipeStacks = this.combineStacks(Arrays.stream(this.getRecipeItems()).toList(), 3);
-        List<ItemStack> stacks = this.combineStacks(entry.getStacks(SlotDisplayContexts.createParameters(mc.world)), 3);
-
-        if (this.compareRecipeStacks(recipeStacks, stacks))
+        if (this.getRecipeCategory() != null && !entry.category().equals(this.getRecipeCategory()))
         {
+            return false;
+        }
+        List<ItemStack> recipeStacks = Arrays.stream(this.getRecipeItems()).toList();
+        List<ItemStack> stacks = entry.getStacks(SlotDisplayContexts.createParameters(mc.world));
+
+        //System.out.printf("matchClientRecipeBookEntry() --> [%s] vs [%s]\n", this.getResult().toString(), stacks.getFirst().toString());
+
+        if (RecipeUtils.areStacksEqual(this.getResult(), stacks.getFirst()))
+        {
+            if (entry.craftingRequirements().isPresent())
+            {
+                return RecipeUtils.compareStacksAndIngredients(recipeStacks, entry.craftingRequirements().get(), this.countRecipeItems());
+            }
+
             return true;
         }
 
@@ -399,11 +272,23 @@ public class RecipePattern
                         Slot slotTmp = gui.getScreenHandler().getSlot(s);
                         this.recipe[i] = slotTmp.hasStack() ? slotTmp.getStack().copy() : InventoryUtils.EMPTY_STACK;
                     }
+                    this.recipeSaveTime = System.currentTimeMillis();
+                }
+                // Stop the mod from overwriting the correctly saved recipe with a button or nugget from the Grid clear
+                else if ((System.currentTimeMillis() - this.recipeSaveTime) < 4000L)
+                {
+                    //System.out.printf("storeCraftingRecipe() SKIPPING InputHandler input result [%s] versus [%s]\n", this.result.toString(), slot.getStack().toString());
+                    this.recipeSaveTime = System.currentTimeMillis();
+                    gui.getScreenHandler().setCursorStack(ItemStack.EMPTY);
+                    InventoryUtils.clearFirstCraftingGridOfAllItems(gui);
+                    return;
                 }
 
+                //System.out.printf("storeCraftingRecipe() old result [%s] new [%s]\n", this.result.toString(), slot.getStack().toString());
                 this.result = slot.getStack().copy();
                 this.lookupVanillaRecipe(mc.world);
                 this.storeSelectedRecipeIdFromGui(gui);
+                InventoryUtils.clearFirstCraftingGridOfAllItems(gui);
             }
             else if (clearIfEmpty)
             {
@@ -416,7 +301,11 @@ public class RecipePattern
     {
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (gui instanceof RecipeBookScreen rbs)
+        if (mc.world == null || mc.player == null)
+        {
+            return;
+        }
+        if (gui instanceof RecipeBookScreen<?> rbs)
         {
             RecipeBookWidget<?> widget = ((IMixinRecipeBookScreen) rbs).itemscroller_getRecipeBookWidget();
 
@@ -429,15 +318,68 @@ public class RecipePattern
                     ClientRecipeBook recipeBook = mc.player.getRecipeBook();
                     Map<NetworkRecipeId, RecipeDisplayEntry> recipeMap = ((IMixinClientRecipeBook) recipeBook).itemscroller_getRecipeMap();
 
-                    this.storeNetworkRecipeId(id, false);
-
                     if (recipeMap.containsKey(id))
                     {
-                        this.storeRecipeDisplayEntry(recipeMap.get(id));
-                    }
+                        RecipeDisplayEntry entry = recipeMap.get(id);
+                        ItemStack result = entry.getStacks(SlotDisplayContexts.createParameters(mc.world)).getFirst();
 
-                    // Clear crafting grid
-                    InventoryUtils.clearFirstCraftingGridOfAllItems(gui);
+                        if (RecipeUtils.areStacksEqual(this.getResult(), result))
+                        {
+                            if (entry.craftingRequirements().isPresent())
+                            {
+                                if (RecipeUtils.compareStacksAndIngredients(Arrays.asList(this.getRecipeItems()), entry.craftingRequirements().get(), this.countRecipeItems()))
+                                {
+                                    ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): Matched Ingredients for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
+                                    this.storeNetworkRecipeId(id);
+                                    this.storeRecipeCategory(entry.category());
+                                    this.storeRecipeDisplayEntry(entry);
+                                }
+                                else
+                                {
+                                    ItemScroller.logger.warn("storeSelectedRecipeIdFromGui(): failed to match Ingredients for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
+                                }
+                            }
+                            else
+                            {
+                                ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): No craftingRequirements present, Saving Blindly for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
+                                this.storeNetworkRecipeId(id);
+                                this.storeRecipeCategory(entry.category());
+                                this.storeRecipeDisplayEntry(entry);
+                            }
+                        }
+                        else
+                        {
+                            // Go for broke, and iterate it.
+                            Pair<NetworkRecipeId, RecipeDisplayEntry> pair = this.matchClientRecipeBook(mc);
+
+                            if (pair != null)
+                            {
+                                ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): matching pair for result stack [{}] networkId [{}]", this.getResult().toString(), pair.getLeft().index());
+                                this.storeNetworkRecipeId(pair.getLeft());
+                                this.storeRecipeCategory(pair.getRight().category());
+                                this.storeRecipeDisplayEntry(pair.getRight());
+                            }
+                            else
+                            {
+                                // Sometimes the result gets de-sync to like an Iron Nugget, just copy it and try one last time (It should work)
+                                this.result = result.copy();
+                                pair = this.matchClientRecipeBook(mc);
+
+                                if (pair != null)
+                                {
+                                    ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): RE-matching pair results stack [{}] networkId [{}]", this.getResult().toString(), pair.getLeft().index());
+                                    this.storeNetworkRecipeId(pair.getLeft());
+                                    this.storeRecipeCategory(pair.getRight().category());
+                                    this.storeRecipeDisplayEntry(pair.getRight());
+                                }
+                                else
+                                {
+                                    ItemScroller.logger.error("storeSelectedRecipeIdFromGui(): Final Exception matching results stack [{}] versus [{}] --> Clearing Recipe", this.getResult().toString(), result.toString());
+                                    this.clearRecipe();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -459,6 +401,8 @@ public class RecipePattern
         this.vanillaRecipe = other.vanillaRecipe;
         this.networkRecipeId = other.networkRecipeId;
         this.displayEntry = other.displayEntry;
+        this.category = other.category;
+        this.recipeSaveTime = System.currentTimeMillis();
     }
 
     public void readFromNBT(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registryManager)
@@ -543,19 +487,34 @@ public class RecipePattern
         return this.recipe;
     }
 
-    public boolean hasRecipeItems()
+    public boolean isEmpty()
     {
         boolean empty = true;
 
         for (int i = 0; i < this.getRecipeLength(); i++)
         {
-            if (this.getRecipeItems()[i].isEmpty() == false)
+            if (!this.getRecipeItems()[i].isEmpty())
             {
                 empty = false;
             }
         }
 
-        return empty;
+        return empty || this.getResult().isEmpty();
+    }
+
+    public int countRecipeItems()
+    {
+        int count = 0;
+
+        for (ItemStack itemStack : this.recipe)
+        {
+            if (!itemStack.isEmpty())
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     public boolean isValid()

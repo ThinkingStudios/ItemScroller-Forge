@@ -4,7 +4,7 @@
 
 # Rock'n Roller
 
-Item Scroller unofficial forge port.
+Item Scroller unofficial (Neo)Forge port.
 
 **Require [MaFgLib](https://github.com/ThinkingStudios/MaLiLib-Forge).**
 
@@ -35,3 +35,7 @@ For more information and downloads of the already compiled builds, see Releases
 - Open a command prompt/terminal to the repository directory
 - run 'gradlew build'
 - The built jar file will be in build/libs/
+
+## Credits
+- [maruohon/itemscroller](https://github.com/maruohon/itemscroller)
+- [sakura-ryoko/itemscroller](https://github.com/sakura-ryoko/itemscroller)

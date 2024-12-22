@@ -11,7 +11,7 @@ logoFile="icon.png" #optional
 credits="masa" #optional
 authors="TexTrue, ThinkingStudio" #optional
 description = '''
-ItemScroller unofficial forge port.
+ItemScroller unofficial (Neo)Forge port.
 
 Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots
 '''
@@ -39,6 +39,6 @@ side = "BOTH"
 [[dependencies.rocknroller]]
 modId = "mafglib"
 type = "required"
-versionRange = "*"
+versionRange = "[0.2.0,)"
 ordering = "NONE"
 side = "BOTH"
