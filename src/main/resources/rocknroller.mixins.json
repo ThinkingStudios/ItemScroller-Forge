@@ -17,6 +17,7 @@
 		"MixinClientPlayNetworkHandler",
 		"MixinClientRecipeBook",
 		"MixinCraftingScreenHandler",
+		"MixinHandledScreen",
 		"MixinItemStack",
 		"MixinMerchantScreen",
 		"MixinMerchantScreenHandler",
