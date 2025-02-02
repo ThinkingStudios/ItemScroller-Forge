@@ -25,7 +25,7 @@ public enum SortingMethod implements IConfigOptionListEntry
     SortingMethod(String configString, String translationKey)
     {
         this.configString = configString;
-        this.translationKey = Reference.ID+".gui.label.sorting_method."+translationKey;
+        this.translationKey = Reference.MOD_ID+".gui.label.sorting_method."+translationKey;
     }
 
     @Override

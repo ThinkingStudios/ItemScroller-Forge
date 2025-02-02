@@ -132,7 +132,7 @@ public class SortingCategory implements IConfigLockedListType
         Entry(String configKey, String translationKey)
         {
             this.configKey = configKey;
-            this.translationKey = Reference.ID+".gui.label.sorting_category."+translationKey;
+            this.translationKey = Reference.MOD_ID+".gui.label.sorting_category."+translationKey;
         }
 
         @Override
