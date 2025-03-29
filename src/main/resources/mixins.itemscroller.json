@@ -3,7 +3,7 @@
 	"package": "fi.dy.masa.itemscroller.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"minVersion": "0.8",
-	"client": [
+	"mixins": [
 		"IMixinCraftingResultSlot",
 		"IMixinMerchantScreen",
 		"IMixinScreenWithHandler",
@@ -16,9 +16,7 @@
 		"MixinMerchantScreen",
 		"MixinMerchantScreenHandler",
 		"MixinRecipeBookWidget",
-		"MixinScreen"
-	],
-	"mixins": [
+		"MixinScreen",
 		"debug.MixinServerPlayNetworkHandler"
 	],
 	"injectors": {

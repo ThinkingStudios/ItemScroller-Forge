@@ -9,7 +9,7 @@ version = "${libs.versions.version.get()}-mc${libs.versions.minecraft.version.ge
 group = libs.versions.maven.group
 
 loom {
-    accessWidenerPath = file("src/main/resources/rocknroller.accesswidener")
+    accessWidenerPath = file("src/main/resources/itemscroller.accesswidener")
 }
 
 repositories {
@@ -32,11 +32,11 @@ dependencies {
     for (String module in ffapi_modules.split(",")) {
         // Fabric API Base
         if (module == "fabric-api-base") {
-            modApi(include("org.sinytra.forgified-fabric-api:$module:0.4.42+d1308ded19")) { transitive = false }
+            modImplementation("org.sinytra.forgified-fabric-api:$module:0.4.42+d1308ded19") { transitive = false }
         }
         // Fabric Networking API V1
         if (module == "fabric-networking-api-v1") {
-            modApi(include("org.sinytra.forgified-fabric-api:$module:4.3.0+cfe47bf219")) { transitive = false }
+            modImplementation("org.sinytra.forgified-fabric-api:$module:4.3.0+cfe47bf219") { transitive = false }
         }
     }
 
@@ -64,7 +64,7 @@ java {
 }
 
 remapJar {
-    atAccessWideners.add("rocknroller.accesswidener")
+    atAccessWideners.add("itemscroller.accesswidener")
 }
 
 // configure the maven publication

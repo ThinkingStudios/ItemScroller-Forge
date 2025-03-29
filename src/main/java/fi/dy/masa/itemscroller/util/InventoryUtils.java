@@ -6,7 +6,6 @@ import java.util.*;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -191,7 +190,7 @@ public class InventoryUtils
     {
         if (slot == null)
         {
-            ItemScroller.logger.info("slot was null");
+            ItemScroller.LOGGER.info("slot was null");
             return;
         }
 
@@ -199,11 +198,11 @@ public class InventoryUtils
         Object inv = slot.inventory;
         String stackStr = InventoryUtils.getStackString(slot.getStack());
 
-        ItemScroller.logger.info(String.format("slot: slotNumber: %d, getSlotIndex(): %d, getHasStack(): %s, " +
+        ItemScroller.LOGGER.info(String.format("slot: slotNumber: %d, getSlotIndex(): %d, getHasStack(): %s, " +
                 "slot class: %s, inv class: %s, Container's slot list has slot: %s, stack: %s, numSlots: %d",
-                slot.id, AccessorUtils.getSlotIndex(slot), slot.hasStack(), slot.getClass().getName(),
+                                               slot.id, AccessorUtils.getSlotIndex(slot), slot.hasStack(), slot.getClass().getName(),
                 inv != null ? inv.getClass().getName() : "<null>", hasSlot ? " true" : "false", stackStr,
-                gui.getScreenHandler().slots.size()));
+                                               gui.getScreenHandler().slots.size()));
     }
 
     private static boolean isValidSlot(Slot slot, HandledScreen<? extends ScreenHandler> gui, boolean requireItems)
@@ -793,6 +792,16 @@ public class InventoryUtils
         if (GuiUtils.getCurrentScreen() instanceof MerchantScreen merchantGui)
         {
             MerchantScreenHandler handler = merchantGui.getScreenHandler();
+
+            try
+            {
+                if (handler.getRecipes().isEmpty()) return;
+            }
+            catch (Exception ignored)
+            {
+                return;
+            }
+
             Slot slot = handler.getSlot(2);
             ItemStack sellItem = handler.getRecipes().get(visibleIndex).getSellItem().copy();
 
@@ -2737,7 +2746,7 @@ public class InventoryUtils
 
             if ( hotbarSlot < 0 )
             {
-                ItemScroller.logger.warn("sortInventory(): no usable hotbar slot to sort shulkerbox");
+                ItemScroller.LOGGER.warn("sortInventory(): no usable hotbar slot to sort shulkerbox");
                 return;
             }
         }
@@ -2770,7 +2779,7 @@ public class InventoryUtils
         }
         catch (Exception err)
         {
-            ItemScroller.logger.error("trySort(): failed to sort items", err);
+            ItemScroller.LOGGER.error("trySort(): failed to sort items", err);
         }
     }
 
@@ -2804,7 +2813,7 @@ public class InventoryUtils
                 .toList()
         );
 
-        ItemScroller.logger.debug(String.format
+        ItemScroller.LOGGER.debug(String.format
         (
             "======\nsort\n%s\n\n",
             IntStream.range(0, ct)
@@ -2844,14 +2853,14 @@ public class InventoryUtils
 
             if (src_ix == dst_ix)
             {
-                ItemScroller.logger.debug("quickSort(): {} ok", src_ix);
+                ItemScroller.LOGGER.debug("quickSort(): {} ok", src_ix);
                 continue;
             }
 
             // pick up and hold "src"
             snapshot.set(src_ix, hold);
             hold = src;
-            ItemScroller.logger.debug("quickSort(): pick up {}; holding {}", src_ix, hold);
+            ItemScroller.LOGGER.debug("quickSort(): pick up {}; holding {}", src_ix, hold);
             clickSlot(gui, slotindex_by_arrayindex[src_ix], swapSlot, SlotActionType.SWAP);
 
             // continually place the held item into its correct place, following the chain to its end
@@ -2863,7 +2872,7 @@ public class InventoryUtils
                 hold = dst;
                 clickSlot(gui, slotindex_by_arrayindex[dst_ix], swapSlot, SlotActionType.SWAP);
 
-                ItemScroller.logger.debug("quickSort(): ... swap {} {}; holding {}", dst_ix, dst != null ? dst.value() : "null", hold);
+                ItemScroller.LOGGER.debug("quickSort(): ... swap {} {}; holding {}", dst_ix, dst != null ? dst.value() : "null", hold);
                 if (hold == null)
                 {
                     break;
@@ -2875,13 +2884,13 @@ public class InventoryUtils
 
             if (limit == max_limit)
             {
-                ItemScroller.logger.warn("quickSort(): took too long to follow swap chain ??");
+                ItemScroller.LOGGER.warn("quickSort(): took too long to follow swap chain ??");
             }
 
         }
         if (hold != null)
         {
-            ItemScroller.logger.warn("quickSort(): sorting complete, but still holding {} ??", hold);
+            ItemScroller.LOGGER.warn("quickSort(): sorting complete, but still holding {} ??", hold);
         }
     }
 
@@ -3290,8 +3299,8 @@ public class InventoryUtils
             }
             catch (Exception e)
             {
-                ItemScroller.logger.warn("Exception while emulating a slot click: gui: '{}', slotNum: {}, mouseButton; {}, SlotActionType: {}",
-                        gui.getClass().getName(), slotNum, mouseButton, type, e);
+                ItemScroller.LOGGER.warn("Exception while emulating a slot click: gui: '{}', slotNum: {}, mouseButton; {}, SlotActionType: {}",
+                                         gui.getClass().getName(), slotNum, mouseButton, type, e);
             }
         }
     }
@@ -3308,8 +3317,8 @@ public class InventoryUtils
         }
         catch (Exception e)
         {
-            ItemScroller.logger.warn("Exception while emulating a slot click: gui: '{}', slotNum: {}, mouseButton; {}, SlotActionType: {}",
-                    gui.getClass().getName(), slotNum, mouseButton, type, e);
+            ItemScroller.LOGGER.warn("Exception while emulating a slot click: gui: '{}', slotNum: {}, mouseButton; {}, SlotActionType: {}",
+                                     gui.getClass().getName(), slotNum, mouseButton, type, e);
         }
     }
 

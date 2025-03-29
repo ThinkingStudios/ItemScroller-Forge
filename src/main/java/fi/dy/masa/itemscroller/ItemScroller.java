@@ -7,19 +7,18 @@ import fi.dy.masa.itemscroller.config.Configs;
 
 public class ItemScroller
 {
-    public static final Logger logger = LogManager.getLogger(Reference.MOD_ID);
+    public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
 
-    public static void onInitialize() {
+    public static void onInitialize()
+    {
         InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
     }
 
-    /*
-    public static void printDebug(String key, Object... args)
+    public static void debugLog(String key, Object... args)
     {
         if (Configs.Generic.DEBUG_MESSAGES.getBooleanValue())
         {
-            logger.info(key, args);
+            LOGGER.info(key, args);
         }
     }
-     */
 }
