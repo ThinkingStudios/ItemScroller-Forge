@@ -9,7 +9,7 @@ version = "${libs.versions.version.get()}-mc${libs.versions.minecraft.version.ge
 group = libs.versions.maven.group
 
 loom {
-    accessWidenerPath = file("src/main/resources/rocknroller.accesswidener")
+    accessWidenerPath = file("src/main/resources/itemscroller.accesswidener")
 }
 
 repositories {
@@ -65,7 +65,7 @@ java {
 }
 
 remapJar {
-    atAccessWideners.add("rocknroller.accesswidener")
+    atAccessWideners.add("itemscroller.accesswidener")
 }
 
 // configure the maven publication
