@@ -229,10 +229,13 @@ public class RecipePattern
             return false;
         }
 
+        // Mojang breaks their own player recipe book.  Verifying the Category here can cause problems.
+        /*
         if (this.getRecipeCategory() != null && !entry.category().equals(this.getRecipeCategory()))
         {
             return false;
         }
+         */
         List<ItemStack> recipeStacks = Arrays.stream(this.getRecipeItems()).toList();
         List<ItemStack> stacks = entry.getStacks(SlotDisplayContexts.createParameters(mc.world));
 
@@ -242,7 +245,7 @@ public class RecipePattern
         {
             if (entry.craftingRequirements().isPresent())
             {
-                return RecipeUtils.compareStacksAndIngredients(recipeStacks, entry.craftingRequirements().get(), this.countRecipeItems());
+                return RecipeUtils.compareStacksAndIngredients(recipeStacks, entry.craftingRequirements().get(), this.countRecipeItems(), RecipeUtils.Type.fromRecipeDisplay(entry.display()));
             }
 
             return true;
@@ -327,21 +330,21 @@ public class RecipePattern
                         {
                             if (entry.craftingRequirements().isPresent())
                             {
-                                if (RecipeUtils.compareStacksAndIngredients(Arrays.asList(this.getRecipeItems()), entry.craftingRequirements().get(), this.countRecipeItems()))
+                                if (RecipeUtils.compareStacksAndIngredients(Arrays.asList(this.getRecipeItems()), entry.craftingRequirements().get(), this.countRecipeItems(), RecipeUtils.Type.fromRecipeDisplay(entry.display())))
                                 {
-                                    ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): Matched Ingredients for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
+                                    ItemScroller.debugLog("storeSelectedRecipeIdFromGui(): Matched Ingredients for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
                                     this.storeNetworkRecipeId(id);
                                     this.storeRecipeCategory(entry.category());
                                     this.storeRecipeDisplayEntry(entry);
                                 }
                                 else
                                 {
-                                    ItemScroller.logger.warn("storeSelectedRecipeIdFromGui(): failed to match Ingredients for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
+                                    ItemScroller.LOGGER.warn("storeSelectedRecipeIdFromGui(): failed to match Ingredients for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
                                 }
                             }
                             else
                             {
-                                ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): No craftingRequirements present, Saving Blindly for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
+                                ItemScroller.debugLog("storeSelectedRecipeIdFromGui(): No craftingRequirements present, Saving Blindly for result stack [{}] networkId [{}]", this.getResult().toString(), id.index());
                                 this.storeNetworkRecipeId(id);
                                 this.storeRecipeCategory(entry.category());
                                 this.storeRecipeDisplayEntry(entry);
@@ -354,7 +357,7 @@ public class RecipePattern
 
                             if (pair != null)
                             {
-                                ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): matching pair for result stack [{}] networkId [{}]", this.getResult().toString(), pair.getLeft().index());
+                                ItemScroller.debugLog("storeSelectedRecipeIdFromGui(): matching pair for result stack [{}] networkId [{}]", this.getResult().toString(), pair.getLeft().index());
                                 this.storeNetworkRecipeId(pair.getLeft());
                                 this.storeRecipeCategory(pair.getRight().category());
                                 this.storeRecipeDisplayEntry(pair.getRight());
@@ -367,14 +370,14 @@ public class RecipePattern
 
                                 if (pair != null)
                                 {
-                                    ItemScroller.printDebug("storeSelectedRecipeIdFromGui(): RE-matching pair results stack [{}] networkId [{}]", this.getResult().toString(), pair.getLeft().index());
+                                    ItemScroller.debugLog("storeSelectedRecipeIdFromGui(): RE-matching pair results stack [{}] networkId [{}]", this.getResult().toString(), pair.getLeft().index());
                                     this.storeNetworkRecipeId(pair.getLeft());
                                     this.storeRecipeCategory(pair.getRight().category());
                                     this.storeRecipeDisplayEntry(pair.getRight());
                                 }
                                 else
                                 {
-                                    ItemScroller.logger.error("storeSelectedRecipeIdFromGui(): Final Exception matching results stack [{}] versus [{}] --> Clearing Recipe", this.getResult().toString(), result.toString());
+                                    ItemScroller.LOGGER.error("storeSelectedRecipeIdFromGui(): Final Exception matching results stack [{}] versus [{}] --> Clearing Recipe", this.getResult().toString(), result.toString());
                                     this.clearRecipe();
                                 }
                             }

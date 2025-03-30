@@ -17,10 +17,7 @@ Move items in inventory GUIs by scrolling the mouse wheel or dragging over slots
 '''
 
 [[mixins]]
-config = "rocknroller.mixins.json"
-
-[[accessTransformers]]
-file = "META-INF/accesstransformer.cfg"
+config = "mixins.itemscroller.json"
 
 [[dependencies.rocknroller]]
 modId = "neoforge"
