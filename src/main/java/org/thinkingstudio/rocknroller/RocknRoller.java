@@ -7,15 +7,14 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import org.thinkingstudio.mafglib.loader.entrypoints.ConfigScreenEntrypoint;
 
 @Mod(value = Reference.MOD_ID, dist = Dist.CLIENT)
 public class RocknRoller {
     public RocknRoller(ModContainer modContainer) {
         if (FMLLoader.getDist().isClient()) {
+            modContainer.registerExtensionPoint(ConfigScreenEntrypoint.class, new ModMenuImpl());
             ItemScroller.onInitialize();
-
-            modContainer.registerExtensionPoint(IConfigScreenFactory.class, new ModMenuImpl().getModConfigScreenFactory());
         }
     }
 }
