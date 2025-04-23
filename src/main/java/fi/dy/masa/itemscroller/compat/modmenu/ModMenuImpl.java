@@ -1,13 +1,13 @@
 package fi.dy.masa.itemscroller.compat.modmenu;
 
 import fi.dy.masa.itemscroller.gui.GuiConfigs;
-import org.thinkingstudio.mafglib.loader.gui.ModConfigScreenFactory;
-import org.thinkingstudio.mafglib.loader.gui.ModConfigScreenInitializer;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import org.thinkingstudio.mafglib.loader.entrypoints.ConfigScreenEntrypoint;
 
-public class ModMenuImpl implements ModConfigScreenInitializer
+public class ModMenuImpl implements ConfigScreenEntrypoint
 {
     @Override
-    public ModConfigScreenFactory getModConfigScreenFactory()
+    public IConfigScreenFactory getModConfigScreenFactory()
     {
         return (modContainer, screen) -> {
             GuiConfigs gui = new GuiConfigs();

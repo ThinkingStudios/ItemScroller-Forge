@@ -1,2 +1,2 @@
 ## Change
-- sync with `sakura-ryoko/itemscroller` 1.21.4-0.26.2
+- update MaFgLib, update NeoForge version to `21.4.124`
