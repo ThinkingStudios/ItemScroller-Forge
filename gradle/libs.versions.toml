@@ -3,10 +3,10 @@
 minecraft_version="1.21.4"
 yarn_mappings="1.21.4+build.8"
 mappings_patch="1.21+build.4"
-neoforge="21.4.124"
+neoforge="21.4.141"
 
 # Mod properties
-version="0.3.1"
+version="0.3.2"
 maven-group="org.thinkingstudio.rocknroller"
 archives-name="RocknRoller"
 
@@ -15,13 +15,13 @@ id-modrinth="hYq29QmW"
 id-curseforge="916852"
 
 # Mod dependencies
-mafglib="0.3.2-mc1.21.4"
+mafglib="0.3.5-mc1.21.4"
 
 # Libraries
 jsr305="3.0.2"
 
 # Gradle plugin
-architectury-loom = "1.9-SNAPSHOT"
+architectury-loom = "1.10-SNAPSHOT"
 modpublisher = "2.+"
 
 [libraries]
