@@ -2,6 +2,7 @@ package fi.dy.masa.itemscroller.util;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
@@ -40,41 +41,14 @@ public class SortingCategory implements IConfigLockedListType
 
     public Entry fromItemStack(ItemStack stack)
     {
-        for (int i = 0; i < Registries.ITEM_GROUP.size(); i++)
-        {
-            ItemGroup itemGroup = Registries.ITEM_GROUP.get(i);
-
-            if (itemGroup != null && itemGroup.getType().equals(ItemGroup.Type.CATEGORY))
-            {
-                Collection<ItemStack> stacks;
-                Iterator<ItemStack> iter;
-
-                if (itemGroup.hasStacks())
-                {
-                    stacks = itemGroup.getDisplayStacks();
-                    iter = stacks.iterator();
-
-                    while (iter.hasNext())
-                    {
-                        if (ItemStack.areItemsEqual(iter.next(), stack))
-                        {
-                            return fromItemGroup(itemGroup);
-                        }
-                    }
-
-                }
-
-                stacks = itemGroup.getSearchTabStacks();
-                iter = stacks.iterator();
-
-                while (iter.hasNext())
-                {
-                    if (ItemStack.areItemsEqual(iter.next(), stack))
-                    {
-                        return fromItemGroup(itemGroup);
-                    }
-                }
-
+        for (ItemGroup itemGroup : Registries.ITEM_GROUP) {
+            if (itemGroup == null || !itemGroup.getType().equals(ItemGroup.Type.CATEGORY)) continue;
+            if (
+                    Stream.concat(itemGroup.getDisplayStacks().stream(), itemGroup.getSearchTabStacks().stream())
+                            .anyMatch(itemStack -> ItemStack.areItemsEqual(itemStack, stack))
+            ) {
+                Entry entry = fromItemGroup(itemGroup);
+                if (entry != null) return entry;
             }
         }
 
@@ -85,14 +59,8 @@ public class SortingCategory implements IConfigLockedListType
     public Entry fromItemGroup(ItemGroup group)
     {
         Identifier id = Registries.ITEM_GROUP.getId(group);
-
-        if (id != null)
-        {
-            return Entry.fromString(id.getPath());
-        }
-
-        return Entry.OTHER;
-    }
+        return id == null ? Entry.OTHER : Entry.fromString(id.getPath());
+	}
 
     @Override
     public ImmutableList<IConfigLockedListEntry> getDefaultEntries()
@@ -152,16 +120,11 @@ public class SortingCategory implements IConfigLockedListType
         {
             for (Entry entry : values())
             {
-                if (entry.configKey.equalsIgnoreCase(key))
-                {
-                    return entry;
-                }
-                else if (entry.translationKey.equalsIgnoreCase(key))
-                {
-                    return entry;
-                }
-                else if (StringUtils.hasTranslation(entry.translationKey) && StringUtils.translate(entry.translationKey).equalsIgnoreCase(key))
-                {
+                if (entry.configKey.equalsIgnoreCase(key) ||
+                        entry.translationKey.equalsIgnoreCase(key) ||
+                        entry.name().equalsIgnoreCase(key) ||
+                        (StringUtils.hasTranslation(entry.translationKey) && StringUtils.translate(entry.translationKey).equalsIgnoreCase(key))
+                ) {
                     return entry;
                 }
             }
