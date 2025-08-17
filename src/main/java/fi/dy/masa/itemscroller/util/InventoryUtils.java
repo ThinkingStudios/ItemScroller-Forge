@@ -2978,8 +2978,8 @@ public class InventoryUtils
                 // as if we are opening the Creative Inventory Screen.
             }
 
-            SortingCategory.Entry cat1 = SortingCategory.INSTANCE.fromItemStack(stack1);
-            SortingCategory.Entry cat2 = SortingCategory.INSTANCE.fromItemStack(stack2);
+            SortingCategory.Entry cat1 = SortingCategory.Entry.fromItemStack(stack1);
+            SortingCategory.Entry cat2 = SortingCategory.Entry.fromItemStack(stack2);
 
             if (!cat1.getStringValue().equals(cat2.getStringValue()))
             {

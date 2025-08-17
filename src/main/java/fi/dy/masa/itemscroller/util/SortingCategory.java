@@ -40,37 +40,6 @@ public class SortingCategory implements IConfigLockedListType
         return ctx;
     }
 
-    public static Map<Item, Entry> cachedItemMap = new HashMap<>();
-    public Entry fromItemStack(ItemStack stack)
-    {
-        Item targetItem = stack.getItem();
-        Entry cache = cachedItemMap.get(targetItem);
-        if (cache != null) return cache;
-        
-        cache = Entry.OTHER;
-        for (ItemGroup itemGroup : Registries.ITEM_GROUP) {
-            if (itemGroup == null || !itemGroup.getType().equals(ItemGroup.Type.CATEGORY)) continue;
-            if (
-                    Stream.concat(itemGroup.getDisplayStacks().stream(), itemGroup.getSearchTabStacks().stream())
-                            .anyMatch(itemStack -> itemStack.isOf(targetItem))
-            ) {
-                Entry entry = fromItemGroup(itemGroup);
-                if (entry == null) continue;
-                cache = entry;
-                break;
-            }
-        }
-        
-        cachedItemMap.put(targetItem, cache);
-        return cache;
-    }
-
-    @Nullable
-    public Entry fromItemGroup(ItemGroup group)
-    {
-        Identifier id = Registries.ITEM_GROUP.getId(group);
-        return id == null ? Entry.OTHER : Entry.fromString(id.getPath());
-	}
 
     @Override
     public ImmutableList<IConfigLockedListEntry> getDefaultEntries()
@@ -126,10 +95,8 @@ public class SortingCategory implements IConfigLockedListType
         }
 
         @Nullable
-        public static Entry fromString(String key)
-        {
-            for (Entry entry : values())
-            {
+        public static Entry fromString(String key) {
+            for (Entry entry : values()) {
                 if (entry.configKey.equalsIgnoreCase(key) ||
                         entry.translationKey.equalsIgnoreCase(key) ||
                         entry.name().equalsIgnoreCase(key) ||
@@ -141,5 +108,40 @@ public class SortingCategory implements IConfigLockedListType
 
             return null;
         }
+
+        @Nullable
+        public static Entry fromItemGroup(ItemGroup group) {
+            Identifier id = Registries.ITEM_GROUP.getId(group);
+            return id == null ? Entry.OTHER : Entry.fromString(id.getPath());
+        }
+
+        private static final Map<Item, Entry> cachedItemMap = new HashMap<>();
+
+        public static Entry fromItem(Item item) {
+            Entry cache = cachedItemMap.get(item);
+            if (cache != null) return cache;
+
+            cache = Entry.OTHER;
+            for (ItemGroup itemGroup : Registries.ITEM_GROUP) {
+                if (itemGroup == null || !itemGroup.getType().equals(ItemGroup.Type.CATEGORY)) continue;
+                if (
+                        Stream.concat(itemGroup.getDisplayStacks().stream(), itemGroup.getSearchTabStacks().stream())
+                                .anyMatch(itemStack -> itemStack.isOf(item))
+                ) {
+                    Entry entry = fromItemGroup(itemGroup);
+                    if (entry == null) continue;
+                    cache = entry;
+                    break;
+                }
+            }
+
+            cachedItemMap.put(item, cache);
+            return cache;
+        }
+
+        public static Entry fromItemStack(ItemStack stack) {
+            return fromItem(stack.getItem());
+        }
+
     }
 }
