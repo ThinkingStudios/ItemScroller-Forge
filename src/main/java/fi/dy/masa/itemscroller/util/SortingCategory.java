@@ -1,12 +1,13 @@
 package fi.dy.masa.itemscroller.util;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -39,20 +40,29 @@ public class SortingCategory implements IConfigLockedListType
         return ctx;
     }
 
+    public static Map<Item, Entry> cachedItemMap = new HashMap<>();
     public Entry fromItemStack(ItemStack stack)
     {
+        Item targetItem = stack.getItem();
+        Entry cache = cachedItemMap.get(targetItem);
+        if (cache != null) return cache;
+        
+        cache = Entry.OTHER;
         for (ItemGroup itemGroup : Registries.ITEM_GROUP) {
             if (itemGroup == null || !itemGroup.getType().equals(ItemGroup.Type.CATEGORY)) continue;
             if (
                     Stream.concat(itemGroup.getDisplayStacks().stream(), itemGroup.getSearchTabStacks().stream())
-                            .anyMatch(itemStack -> ItemStack.areItemsEqual(itemStack, stack))
+                            .anyMatch(itemStack -> itemStack.isOf(targetItem))
             ) {
                 Entry entry = fromItemGroup(itemGroup);
-                if (entry != null) return entry;
+                if (entry == null) continue;
+                cache = entry;
+                break;
             }
         }
-
-        return Entry.OTHER;
+        
+        cachedItemMap.put(targetItem, cache);
+        return cache;
     }
 
     @Nullable
