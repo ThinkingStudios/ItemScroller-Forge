@@ -86,12 +86,9 @@ public class SortingCategory implements IConfigLockedListType
     {
         Identifier id = Registries.ITEM_GROUP.getId(group);
 
-        if (id != null)
-        {
-            return Entry.fromString(id.getPath());
-        }
-
-        return Entry.OTHER;
+        if (id == null) return Entry.OTHER;
+        Entry e =  Entry.fromString(id.getPath());
+        return (e == null) ? Entry.OTHER : e;
     }
 
     @Override
